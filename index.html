@@ -196,9 +196,13 @@
         <aside class="glass">
             <nav id="sidebar-nav">
                 <ul>
-                    <li><a href="#dashboard" class="nav-item active" data-view="dashboard">
+                    <li><a href="#portfolio" class="nav-item active" data-view="portfolio">
+                        <i data-lucide="pie-chart"></i>
+                        <span class="nav-text">Visión Global</span>
+                    </a></li>
+                    <li><a href="#dashboard" class="nav-item" data-view="dashboard">
                         <i data-lucide="layout-dashboard"></i>
-                        <span class="nav-text">Dashboard</span>
+                        <span class="nav-text">Dashboard Proyecto</span>
                     </a></li>
                     <li><a href="#projects" class="nav-item" data-view="projects">
                         <i data-lucide="folder-kanban"></i>
@@ -233,7 +237,8 @@
         </aside>
 
         <main id="main-content">
-            <div id="view-dashboard" class="view-container"></div>
+            <div id="view-portfolio" class="view-container"></div>
+            <div id="view-dashboard" class="view-container" style="display: none;"></div>
             <div id="view-projects" class="view-container" style="display: none;"></div>
             <div id="view-clients" class="view-container" style="display: none;"></div>
             <div id="view-budget" class="view-container" style="display: none;"></div>
@@ -282,9 +287,19 @@
         <h2 style="font-weight: 800; color: var(--primary);">MusaMediciones Cloud</h2>
         <div style="background: white; padding: 2rem; border-radius: var(--radius-xl); box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center;">
             <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Inicia sesión para entrar a tu cuenta en la nube.</p>
+            
             <input type="email" id="login-email" placeholder="Correo Electrónico" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.8rem; font-size: 1rem; text-align: center;">
+            
+            <div id="login-hint" style="font-size: 0.75rem; color: var(--text-muted); margin-top: -0.4rem; margin-bottom: 0.8rem; display: none; line-height: 1.4; padding: 0.6rem; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); text-align: left;"></div>
+            
             <input type="password" id="login-key" placeholder="Contraseña" style="width: 100%; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem; font-size: 1rem; text-align: center;">
-            <button id="btn-login" onclick="window.emergencyLogin()" class="btn-musa" style="width: 100%; padding: 1rem;">Entrar</button>
+            
+            <button id="btn-login" onclick="window.emergencyLogin()" class="btn-musa" style="width: 100%; padding: 1rem; font-weight: 600;">Entrar</button>
+            
+            <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                <a id="btn-reset-password" href="#" onclick="event.preventDefault(); window.emergencyPasswordReset()" style="color: var(--primary); font-size: 0.85rem; text-decoration: none; font-weight: 600; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">¿Olvidaste tu contraseña?</a>
+            </div>
+
             <div id="login-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 1rem; display: none;">Clave incorrecta. Inténtalo de nuevo.</div>
         </div>
     </div>
@@ -294,18 +309,71 @@
     <script type="module">
         console.log("MusaApp: Iniciando carga de Firebase SDK...");
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        window.firebase = { initializeApp, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, query, where, onSnapshot };
+        window.firebase = { initializeApp, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail, getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, query, where, onSnapshot };
         console.log("MusaApp: Firebase SDK cargado correctamente.");
+
+        // Intentar recuperar el último email guardado por Firebase en IndexedDB
+        async function getSavedEmail() {
+            return new Promise((resolve) => {
+                try {
+                    const req = indexedDB.open("firebaseLocalStorageDb");
+                    req.onerror = () => resolve(null);
+                    req.onsuccess = () => {
+                        const db = req.result;
+                        if (!db.objectStoreNames.contains("firebaseLocalStorage")) {
+                            resolve(null);
+                            return;
+                        }
+                        const tx = db.transaction(["firebaseLocalStorage"], "readonly");
+                        const store = tx.objectStore("firebaseLocalStorage");
+                        const getAllReq = store.getAll();
+                        getAllReq.onsuccess = () => {
+                            const data = getAllReq.result;
+                            if (data && data.length > 0) {
+                                for (const item of data) {
+                                    if (item && item.value && item.value.email) {
+                                        resolve(item.value.email);
+                                        return;
+                                    }
+                                }
+                            }
+                            resolve(null);
+                        };
+                        getAllReq.onerror = () => resolve(null);
+                    };
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        }
+
+        // Pre-cargar el último correo si existe
+        document.addEventListener("DOMContentLoaded", async () => {
+            setTimeout(async () => {
+                const emailInput = document.getElementById('login-email');
+                if (emailInput) {
+                    const savedEmail = await getSavedEmail();
+                    if (savedEmail) {
+                        emailInput.value = savedEmail;
+                        const hintDiv = document.getElementById('login-hint');
+                        if (hintDiv) {
+                            hintDiv.style.display = 'block';
+                            hintDiv.innerHTML = `💡 <strong>Sugerencia:</strong> Tu última sesión activa fue con <strong style="color: var(--primary);">${savedEmail}</strong>.`;
+                        }
+                    }
+                }
+            }, 500);
+        });
 
         window.emergencyLogin = async function() {
             console.log("MusaApp: BOTÓN PULSADO (Emergencia)");
             if (!window.firebase) { alert("Error: Firebase no ha cargado correctamente."); return; }
             if (!window.state) { alert("Error: El estado de la app (state.js) no está disponible."); return; }
             
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-key').value;
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-key').value.trim();
             
             if (!email || !pass) { alert("Por favor, introduce tu correo y contraseña."); return; }
             
@@ -326,8 +394,44 @@
                 alert("Error en el login: " + e.message);
             }
         };
+
+        window.emergencyPasswordReset = async function() {
+            const emailInput = document.getElementById('login-email');
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert("Por favor, introduce tu correo electrónico en el campo superior para enviarte el enlace de restablecimiento.");
+                emailInput.focus();
+                return;
+            }
+            
+            if (!confirm(`¿Enviar un correo para restablecer la contraseña a: ${email}?`)) {
+                return;
+            }
+
+            if (!window.firebase) { alert("Error: Firebase no ha cargado correctamente."); return; }
+            if (!window.state) { alert("Error: El estado de la app (state.js) no está disponible."); return; }
+
+            const btnReset = document.getElementById('btn-reset-password');
+            const oldText = btnReset.textContent;
+            btnReset.textContent = "Enviando enlace...";
+            btnReset.style.pointerEvents = 'none';
+
+            try {
+                if (!window.state.auth) window.state.initFirebaseAppOnly();
+                const auth = window.state.auth;
+                await window.firebase.sendPasswordResetEmail(auth, email);
+                alert(`¡Correo enviado! Revisa la bandeja de entrada de ${email} para restablecer tu contraseña.`);
+            } catch (e) {
+                console.error("MusaApp: Error restableciendo contraseña:", e);
+                alert("Error al enviar el correo de restablecimiento: " + e.message);
+            } finally {
+                btnReset.textContent = oldText;
+                btnReset.style.pointerEvents = 'auto';
+            }
+        };
     </script>
     <script src="js/state.js?v=6" defer></script>
+    <script src="js/components/portfolio.js?v=7" defer></script>
     <script src="js/components/dashboard.js?v=6" defer></script>
     <script src="js/components/budget.js?v=6" defer></script>
     <script src="js/components/project-manager.js?v=6" defer></script>

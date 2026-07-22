@@ -17,6 +17,7 @@ window.musaApp = {
         this.btnLogin = document.getElementById('btn-login');
 
         this.views = {
+            portfolio: document.getElementById('view-portfolio'),
             dashboard: document.getElementById('view-dashboard'),
             projects: document.getElementById('view-projects'),
             clients: document.getElementById('view-clients'),
@@ -26,6 +27,7 @@ window.musaApp = {
         
         try {
             this.components = {
+                portfolio: new window.PortfolioView(this.views.portfolio),
                 dashboard: new window.DashboardView(this.views.dashboard),
                 projects: new window.ProjectManagerView(this.views.projects),
                 clients: new window.ClientManagerView(this.views.clients),
@@ -138,7 +140,7 @@ window.musaApp = {
             }
         });
 
-        this.switchView('dashboard');
+        this.switchView('portfolio');
     },
 
     switchView: function(viewName) {
