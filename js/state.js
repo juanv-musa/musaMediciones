@@ -62,7 +62,12 @@ class State {
                     id: doc.id,
                     name: doc.data().project?.name || 'Sin nombre',
                     total: doc.data().project?.total || 0,
-                    lastModified: doc.data().project?.lastModified
+                    lastModified: doc.data().project?.lastModified,
+                    status: doc.data().project?.status || 'En plazo',
+                    deadline: doc.data().project?.deadline || '',
+                    milestone: doc.data().project?.milestone || 'Fase Inicial',
+                    progress: doc.data().project?.progress || 0,
+                    risk: doc.data().project?.risk || 'Bajo'
                 }));
                 this.notify();
                 
@@ -141,7 +146,12 @@ class State {
                 taxTotal: 0,   
                 total: 0,      
                 date: new Date().toISOString().split('T')[0],
-                lastModified: new Date().toISOString()
+                lastModified: new Date().toISOString(),
+                status: 'En plazo',
+                deadline: '',
+                milestone: 'Fase Inicial',
+                progress: 0,
+                risk: 'Bajo'
             },
             chapters: [
                 { id: 'C1', order: "01", title: 'Capítulo 1', total: 0, items: [] }

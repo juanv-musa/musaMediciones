@@ -37,12 +37,48 @@ class DashboardView {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                     <div class="glass" style="padding: 2.5rem; border-radius: var(--radius-xl); background: white;">
                         <h3 style="margin-bottom: 2rem; font-size: 1.4rem; font-weight: 700;">Distribución por Capítulos</h3>
-                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-height: 300px; overflow-y: auto; padding-right: 1rem;">
                             ${data.chapters.map(chapter => this.renderChapterBar(chapter, data.project.total)).join('')}
                         </div>
                     </div>
                     
-                    <div class="glass" style="padding: 2.5rem; border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: white;">
+                    <div class="glass" style="padding: 2.5rem; border-radius: var(--radius-xl); background: white;">
+                        <h3 style="margin-bottom: 1.5rem; font-size: 1.4rem; font-weight: 700;"><i data-lucide="settings" style="width: 20px; vertical-align: middle; margin-right: 8px;"></i> Estado del Proyecto</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Porcentaje de Progreso (%)</label>
+                                <input type="number" id="inp-progress" min="0" max="100" value="${data.project.progress || 0}" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Hito Actual</label>
+                                <input type="text" id="inp-milestone" value="${data.project.milestone || 'Fase Inicial'}" placeholder="Ej: Hito 1/4" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Fecha Límite</label>
+                                <input type="text" id="inp-deadline" value="${data.project.deadline || ''}" placeholder="Ej: 31 JULIO" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Nivel de Riesgo</label>
+                                <select id="sel-risk" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;">
+                                    <option value="Bajo" ${data.project.risk === 'Bajo' ? 'selected' : ''}>🟢 Bajo</option>
+                                    <option value="Medio" ${data.project.risk === 'Medio' ? 'selected' : ''}>🟡 Medio</option>
+                                    <option value="Alto" ${data.project.risk === 'Alto' ? 'selected' : ''}>🔴 Alto</option>
+                                </select>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Estado General</label>
+                                <select id="sel-status" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;">
+                                    <option value="En plazo" ${data.project.status === 'En plazo' ? 'selected' : ''}>En plazo</option>
+                                    <option value="Cierre" ${data.project.status === 'Cierre' ? 'selected' : ''}>Cierre inminente</option>
+                                    <option value="Retraso" ${data.project.status === 'Retraso' ? 'selected' : ''}>Retraso</option>
+                                    <option value="Finalizado" ${data.project.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass" style="padding: 2.5rem; border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: white; grid-column: 1 / -1;">
                         <div style="width: 80px; height: 80px; background: rgba(140, 198, 63, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
                             <i data-lucide="printer" style="width: 40px; height: 40px; color: var(--primary);"></i>
                         </div>
@@ -63,6 +99,21 @@ class DashboardView {
         if (btnPrint) {
             btnPrint.addEventListener('click', () => window.print());
         }
+
+        const inpProgress = this.container.querySelector('#inp-progress');
+        if (inpProgress) inpProgress.addEventListener('change', (e) => window.state.updateProjectMetadata('progress', parseFloat(e.target.value) || 0));
+
+        const inpMilestone = this.container.querySelector('#inp-milestone');
+        if (inpMilestone) inpMilestone.addEventListener('change', (e) => window.state.updateProjectMetadata('milestone', e.target.value));
+
+        const inpDeadline = this.container.querySelector('#inp-deadline');
+        if (inpDeadline) inpDeadline.addEventListener('change', (e) => window.state.updateProjectMetadata('deadline', e.target.value));
+
+        const selRisk = this.container.querySelector('#sel-risk');
+        if (selRisk) selRisk.addEventListener('change', (e) => window.state.updateProjectMetadata('risk', e.target.value));
+
+        const selStatus = this.container.querySelector('#sel-status');
+        if (selStatus) selStatus.addEventListener('change', (e) => window.state.updateProjectMetadata('status', e.target.value));
     }
 
     calculateTotalDuration(data) {

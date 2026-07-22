@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard | Musaraña</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --surface-hover: rgba(51, 65, 85, 0.8);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --accent-purple: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism utility */
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .title p {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Top Stats Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: var(--surface-hover);
+        }
+
+        .kpi-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Projects List */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .projects-panel {
+            padding: 1.5rem;
+        }
+
+        .project-item {
+            display: grid;
+            grid-template-columns: 3fr 2fr 2fr 1fr;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .project-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-bottom-color: transparent;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .p-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .p-deadline {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .p-progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 2rem;
+        }
+
+        .p-progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .p-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .status-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .status-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        /* Side Panels */
+        .side-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel {
+            padding: 1.5rem;
+        }
+
+        /* Risk Matrix */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .risk-box {
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .risk-box h4 {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .risk-box span {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Financials */
+        .finance-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title">
+                <h1>Control de Proyectos Musaraña</h1>
+                <p>Dashboard Ejecutivo Global</p>
+            </div>
+            <div class="glass" style="padding: 0.75rem 1.5rem; display: flex; gap: 1rem; align-items: center;">
+                <img src="assets/logo.png" alt="Logo" style="height: 30px; opacity: 0.8; filter: brightness(0) invert(1);" onerror="this.style.display='none'">
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Dashboard Global</div>
+            </div>
+        </header>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card glass">
+                <div class="kpi-title"><i data-lucide="folder-kanban" style="width:18px; color: var(--accent-blue)"></i> Proyectos Activos</div>
+                <div class="kpi-value">7</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">En ejecución actual</div>
+            </div>
+            <div class="kpi-card glass">
+                <div class="kpi-title"><i data-lucide="check-circle-2" style="width:18px; color: var(--accent-green)"></i> Progreso Global</div>
+                <div class="kpi-value">48%</div>
+                <div style="font-size: 0.8rem; color: var(--accent-green);">Ritmo adecuado</div>
+            </div>
+            <div class="kpi-card glass">
+                <div class="kpi-title"><i data-lucide="alert-triangle" style="width:18px; color: var(--accent-red)"></i> Tareas Críticas</div>
+                <div class="kpi-value">3</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Con retraso detectado</div>
+            </div>
+            <div class="kpi-card glass">
+                <div class="kpi-title"><i data-lucide="wallet" style="width:18px; color: var(--accent-purple)"></i> Gasto vs Presupuesto</div>
+                <div class="kpi-value">-1.2%</div>
+                <div style="font-size: 0.8rem; color: var(--accent-green);">Dentro de márgenes</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Project List -->
+            <div class="projects-panel glass">
+                <h2 class="section-title"><i data-lucide="list-todo"></i> Estado de Proyectos</h2>
+                
+                <div style="display: flex; flex-direction: column;">
+                    
+                    <!-- Item 1 -->
+                    <div class="project-item">
+                        <div class="p-name">38. CM JODAR 2026</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 31 JULIO (Inminente)</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>85% Completado</span>
+                                <span style="color: var(--text-secondary)">Hito 4/4</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 85%; background: var(--accent-orange);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-warning">Cierre</span></div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="project-item">
+                        <div class="p-name">CI 40. SANTA ELENA IBERA 2026</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 14 SEPTIEMBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>60% Completado</span>
+                                <span style="color: var(--text-secondary)">Hito 2/3</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 60%; background: var(--accent-blue);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-active">En plazo</span></div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="project-item">
+                        <div class="p-name">PM_11. PLAN SEGURIDAD ALCALA LA REAL</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 28 SEPTIEMBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>35% Completado</span>
+                                <span style="color: var(--text-secondary)">Hito 1/4</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 35%; background: var(--accent-blue);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-active">En plazo</span></div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="project-item">
+                        <div class="p-name">ME_08 PANELES MUELA, MENGÍBAR 2022</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 28 SEPTIEMBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>100% Completado</span>
+                                <span style="color: var(--text-secondary)">Entregado</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 100%; background: var(--accent-green);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-active" style="background: rgba(16,185,129,0.1); color: var(--accent-green);">Finalizado</span></div>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="project-item">
+                        <div class="p-name">MI_18. ALMENA 14 MUNITUR 25 BAÑOS ENCINA</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 6 OCTUBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>20% Completado</span>
+                                <span style="color: var(--text-secondary)">Hito 1/5</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 20%; background: var(--accent-red);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-danger">Retraso</span></div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="project-item">
+                        <div class="p-name">ME_14 PIEDRA SECA BAÑOS ENCINA</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 6 OCTUBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>25% Completado</span>
+                                <span style="color: var(--text-secondary)">Hito 1/2</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 25%; background: var(--accent-blue);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-active">En plazo</span></div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="project-item">
+                        <div class="p-name">41. CI EL PAJARILLO 2026</div>
+                        <div class="p-deadline"><i data-lucide="calendar" style="width:14px;"></i> 30 NOVIEMBRE</div>
+                        <div class="p-progress-container">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>5% Completado</span>
+                                <span style="color: var(--text-secondary)">Fase Inicial</span>
+                            </div>
+                            <div class="p-progress-bar">
+                                <div class="p-progress-fill" style="width: 5%; background: var(--accent-blue);"></div>
+                            </div>
+                        </div>
+                        <div><span class="status-badge status-active">En plazo</span></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="side-panels">
+                <!-- Risk Matrix -->
+                <div class="panel glass">
+                    <h2 class="section-title"><i data-lucide="shield-alert"></i> Matriz de Riesgos</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Nivel de alerta en portfolio actual</p>
+                    <div class="risk-grid">
+                        <div class="risk-box" style="border-left: 3px solid var(--accent-red);">
+                            <h4>Riesgo Alto</h4>
+                            <span style="color: var(--accent-red);">1</span>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">MI_18 Almena (Retraso)</div>
+                        </div>
+                        <div class="risk-box" style="border-left: 3px solid var(--accent-orange);">
+                            <h4>Riesgo Medio</h4>
+                            <span style="color: var(--accent-orange);">1</span>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">CM Jódar (Cierre)</div>
+                        </div>
+                        <div class="risk-box" style="border-left: 3px solid var(--accent-blue);">
+                            <h4>Riesgo Bajo</h4>
+                            <span style="color: var(--accent-blue);">4</span>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">Desarrollo Normal</div>
+                        </div>
+                        <div class="risk-box" style="border-left: 3px solid var(--accent-green);">
+                            <h4>Finalizados</h4>
+                            <span style="color: var(--accent-green);">1</span>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">Sin riesgo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financials Overview -->
+                <div class="panel glass">
+                    <h2 class="section-title"><i data-lucide="pie-chart"></i> Salud Financiera</h2>
+                    
+                    <div class="finance-row">
+                        <span style="color: var(--text-secondary);">Presupuesto Total Estimado</span>
+                        <span style="font-weight: 600;">345.000 €</span>
+                    </div>
+                    <div class="finance-row">
+                        <span style="color: var(--text-secondary);">Gasto Real Acumulado</span>
+                        <span style="font-weight: 600; color: var(--accent-blue);">158.400 €</span>
+                    </div>
+                    <div class="finance-row">
+                        <span style="color: var(--text-secondary);">Ratio de Consumo</span>
+                        <span style="font-weight: 600; color: var(--accent-green);">45.9%</span>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            <span>Consumo de Presupuesto</span>
+                            <span>45%</span>
+                        </div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                            <div style="width: 45%; height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
