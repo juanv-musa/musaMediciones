@@ -67,7 +67,8 @@ class State {
                     deadline: doc.data().project?.deadline || '',
                     milestone: doc.data().project?.milestone || 'Fase Inicial',
                     progress: doc.data().project?.progress || 0,
-                    risk: doc.data().project?.risk || 'Bajo'
+                    risk: doc.data().project?.risk || 'Bajo',
+                    actualSpend: doc.data().project?.actualSpend || 0
                 }));
                 this.notify();
                 
@@ -151,7 +152,8 @@ class State {
                 deadline: '',
                 milestone: 'Fase Inicial',
                 progress: 0,
-                risk: 'Bajo'
+                risk: 'Bajo',
+                actualSpend: 0
             },
             chapters: [
                 { id: 'C1', order: "01", title: 'Capítulo 1', total: 0, items: [] }
@@ -199,7 +201,7 @@ class State {
         if (chapter) {
             const itemOrder = `${chapter.order}.${(chapter.items.length + 1).toString().padStart(2, '0')}`;
             chapter.items.push({
-                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: '', unit: 'ud', price: 0, qty: 0, total: 0, measurements: [], ...itemData
+                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: '', unit: 'ud', price: 0, qty: 0, total: 0, actualSpend: 0, measurements: [], ...itemData
             });
             this.calculate();
         }
@@ -229,8 +231,10 @@ class State {
     calculate() {
         if (!this.data || !this.data.project) return;
         let pem = 0;
+        let totalActualSpend = 0;
         this.data.chapters.forEach(chapter => {
             let chapterTotal = 0;
+            let chapterActualSpend = 0;
             chapter.items.forEach(item => {
                 let itemTotalQty = 0;
                 item.measurements.forEach(m => {
@@ -240,9 +244,12 @@ class State {
                 item.qty = itemTotalQty || 0;
                 item.total = item.qty * (item.price || 0);
                 chapterTotal += item.total;
+                chapterActualSpend += (item.actualSpend || 0);
             });
             chapter.total = chapterTotal;
+            chapter.actualSpend = chapterActualSpend;
             pem += chapterTotal;
+            totalActualSpend += chapterActualSpend;
         });
 
         const p = this.data.project;
@@ -252,6 +259,7 @@ class State {
         p.pec = pem + p.expensesTotal + p.benefitTotal;
         p.taxTotal = p.pec * (p.taxPct / 100);
         p.total = p.pec + p.taxTotal;
+        p.actualSpend = totalActualSpend; // Auto-calculated from items
         
         this.saveAll(); // Auto-save on every change
         this.notify();

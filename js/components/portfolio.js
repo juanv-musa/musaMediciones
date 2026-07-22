@@ -15,6 +15,7 @@ class PortfolioView {
         let totalProgress = 0;
         let criticalTasks = 0;
         let totalBudget = 0;
+        let totalActualSpend = 0;
 
         let riskHigh = 0;
         let riskMed = 0;
@@ -24,6 +25,7 @@ class PortfolioView {
         projects.forEach(p => {
             totalProgress += (p.progress || 0);
             totalBudget += (p.total || 0);
+            totalActualSpend += (p.actualSpend || 0);
             
             if (p.risk === 'Alto') riskHigh++;
             else if (p.risk === 'Medio') riskMed++;
@@ -155,6 +157,16 @@ class PortfolioView {
                             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.95rem;">
                                 <span style="color: var(--text-secondary);">Presupuesto Total Estimado</span>
                                 <span style="font-weight: 700;">${totalBudget.toLocaleString('es-ES', { minimumFractionDigits: 0 })} €</span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.95rem;">
+                                <span style="color: var(--text-secondary);">Gasto Real Acumulado</span>
+                                <span style="font-weight: 700; color: var(--primary);">${totalActualSpend.toLocaleString('es-ES', { minimumFractionDigits: 0 })} €</span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.95rem;">
+                                <span style="color: var(--text-secondary);">Ratio de Consumo</span>
+                                <span style="font-weight: 700; color: ${(totalBudget > 0 && (totalActualSpend / totalBudget) > 1) ? 'var(--danger)' : 'var(--text-primary)'};">${totalBudget > 0 ? ((totalActualSpend / totalBudget) * 100).toFixed(1) : 0}%</span>
                             </div>
                             
                             <div style="margin-top: 2rem;">

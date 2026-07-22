@@ -74,6 +74,7 @@ class BudgetView {
                     <!-- Enhanced Totals Block -->
                     <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #000; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                         <div style="font-size: 0.9rem; color: #666;">SUMA EJECUCIÓN MATERIAL: <strong>${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #7c3aed; font-weight: 700;">GASTO REAL TOTAL: <strong>${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
                         <div style="font-size: 0.9rem; color: #666;">GASTOS GENERALES (${p.expensesPct}%): <strong>${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
                         <div style="font-size: 0.9rem; color: #666;">BENEFICIO INDUSTRIAL (${p.benefitPct}%): <strong>${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
                         <div style="font-size: 1.2rem; font-weight: 800; margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
@@ -102,7 +103,7 @@ class BudgetView {
                     </div>
                 </div>
                 
-                <div class="table-header technical-header" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px; gap: 10px; padding: 10px 15px; font-size: 0.7rem; font-weight: 800; border-bottom: 2px solid #000; text-transform: uppercase;">
+                <div class="table-header technical-header" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px 100px; gap: 10px; padding: 10px 15px; font-size: 0.7rem; font-weight: 800; border-bottom: 2px solid #000; text-transform: uppercase;">
                     <div>Ord</div>
                     <div>Descripción</div>
                     <div style="text-align: right;">Uds</div>
@@ -112,14 +113,16 @@ class BudgetView {
                     <div style="text-align: right;">Subtotal</div>
                     <div style="text-align: right;">Precio</div>
                     <div style="text-align: right;">Importe</div>
+                    <div style="text-align: right; color: #8b5cf6;">Gasto Real</div>
                 </div>
 
                 ${chapter.items.map(item => this.renderItem(item)).join('')}
                 
-                <div style="padding: 10px 0; border-top: 1px solid #000; display: flex; justify-content: flex-end;" class="ignore-print">
+                <div style="padding: 10px 0; border-top: 1px solid #000; display: flex; justify-content: flex-end; align-items: center; gap: 2rem;" class="ignore-print">
                     <button class="add-item-btn btn-musa-ghost" data-chapter-id="${chapter.id}" style="font-size: 0.8rem; font-weight: 700;">+ Añadir Partida</button>
                     <div style="flex: 1;"></div>
-                    <div style="font-weight: 800; text-transform: uppercase; font-size: 0.9rem;">TOTAL CAPITULO ${chapter.order} <span style="margin-left: 20px;">${chapter.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></div>
+                    <div style="font-size: 0.75rem; color: #8b5cf6; font-weight: 700;">GASTO REAL CAPÍTULO: <span style="margin-left: 8px;">${(chapter.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></div>
+                    <div style="font-weight: 800; text-transform: uppercase; font-size: 0.9rem;">TOTAL CAPÍTULO ${chapter.order} <span style="margin-left: 20px;">${chapter.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></div>
                 </div>
             </div>
         `).join('');
@@ -129,7 +132,7 @@ class BudgetView {
         return `
             <div class="item-block" style="border-bottom: 1px solid #eee;">
                 <!-- Main Item Row -->
-                <div class="partida" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px; gap: 10px; padding: 12px 15px; align-items: start; background: white;">
+                <div class="partida" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px 100px; gap: 10px; padding: 12px 15px; align-items: start; background: white;">
                     <div style="font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.8rem;">${item.order}</div>
                     <div style="font-size: 0.85rem;">
                         <div contenteditable="true" class="item-title-edit" data-id="${item.id}" style="font-weight: 800; text-transform: uppercase; margin-bottom: 4px; outline: none; border-bottom: 1px dashed #ddd;">${item.descShort}</div>
@@ -150,11 +153,16 @@ class BudgetView {
                         <span class="print-only">${item.price.toFixed(2)}</span>
                     </div>
                     <div style="text-align: right; font-weight: 800; font-size: 0.9rem;">${item.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                    <div style="text-align: right;">
+                        <input type="number" class="actual-spend-input ignore-print" data-id="${item.id}" min="0" value="${(item.actualSpend || 0).toFixed(2)}" style="width: 90px; padding: 3px 5px; border: 1px solid #c4b5fd; border-radius: 4px; font-size: 0.8rem; text-align: right; background: #f5f3ff; color: #7c3aed;"
+                            title="Gasto real acumulado en esta partida">
+                        <span class="print-only" style="color: #7c3aed;">${(item.actualSpend || 0).toFixed(2)}</span>
+                    </div>
                 </div>
 
                 <!-- Measurement Rows -->
                 ${item.measurements.map(m => `
-                    <div class="measurement-row" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px; gap: 10px; padding: 4px 15px; font-size: 0.8rem; color: #444; background: #fdfdfd;">
+                    <div class="measurement-row" style="display: grid; grid-template-columns: 60px 1fr 60px 60px 60px 60px 80px 80px 100px 100px; gap: 10px; padding: 4px 15px; font-size: 0.8rem; color: #444; background: #fdfdfd;">
                         <div></div>
                         <div style="padding-left: 20px; font-style: italic;">
                             <input type="text" class="m-desc-edit ignore-print" data-id="${item.id}" data-mid="${m.id}" value="${m.desc || ''}" placeholder="Línea medición..." style="background: transparent; border: none; border-bottom: 1px dashed #ddd; font-size: 0.75rem; width: 100%; outline: none; color: #666;">
@@ -165,7 +173,7 @@ class BudgetView {
                         <div class="val-edit"><input type="number" class="m-edit" data-id="${item.id}" data-mid="${m.id}" data-field="width" value="${m.width}"></div>
                         <div class="val-edit"><input type="number" class="m-edit" data-id="${item.id}" data-mid="${m.id}" data-field="height" value="${m.height}"></div>
                         <div style="text-align: right;">${m.subtotal.toFixed(2)}</div>
-                        <div></div><div></div>
+                        <div></div><div></div><div></div>
                     </div>
                 `).join('')}
 
@@ -187,6 +195,12 @@ class BudgetView {
         this.container.querySelectorAll('.price-input').forEach(el => {
             el.addEventListener('change', (e) => {
                 window.state.updateItemData(el.getAttribute('data-id'), 'price', e.target.value);
+            });
+        });
+
+        this.container.querySelectorAll('.actual-spend-input').forEach(el => {
+            el.addEventListener('change', (e) => {
+                window.state.updateItemData(el.getAttribute('data-id'), 'actualSpend', parseFloat(e.target.value) || 0);
             });
         });
 
