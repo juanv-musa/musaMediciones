@@ -324,7 +324,13 @@ function numeroALetras(num) {
                         <div style="font-weight: bold;">SITUACION:</div>
                         <div>${(p.situation || '').toUpperCase()}</div>
                         <div style="font-weight: bold;">PROPIEDAD:</div>
-                        <div>${(p.property || '').toUpperCase()}</div>
+                        <div>
+                            ${(p.property || '').toUpperCase()}
+                            ${(() => {
+                                const client = (window.state.clients || []).find(c => c.id === p.clientId);
+                                return client ? (p.property ? `<br>${client.name}` : client.name).toUpperCase() : '';
+                            })()}
+                        </div>
                     </div>
                 </div>
 

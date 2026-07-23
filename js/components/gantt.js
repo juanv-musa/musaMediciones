@@ -33,7 +33,7 @@ class PlanningView {
                 <div style="padding: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
                     <h2 style="font-weight: 800; font-size: 2rem; color: var(--text-primary);">Planificación Temporal (Gantt)</h2>
                     <div style="display: flex; gap: 1rem;">
-                        <button id="btn-export-pdf" class="btn-musa" style="background: white; color: var(--primary); border: 2px solid var(--primary);">Exportar a PDF / Imprimir</button>
+                        <button id="btn-export-gantt-pdf" class="btn-musa" style="background: white; color: var(--primary); border: 2px solid var(--primary);">Exportar a PDF / Imprimir</button>
                     </div>
                 </div>
 
@@ -51,7 +51,7 @@ class PlanningView {
 
                     <!-- SVG Timeline -->
                     <div id="gantt-timeline-container" style="overflow: auto; background: #ffffff;">
-                        <svg width="${totalDays * this.dayWidth}" height="${flattened.length * this.rowHeight + 50}" class="gantt-svg">
+                        <svg width="${totalDays * this.dayWidth}" height="${flattened.length * this.rowHeight + 50}" viewBox="0 0 ${totalDays * this.dayWidth} ${flattened.length * this.rowHeight + 50}" preserveAspectRatio="xMinYMin meet" class="gantt-svg">
                             <defs>
                                 <pattern id="grid" width="${this.dayWidth}" height="${this.rowHeight}" patternUnits="userSpaceOnUse">
                                     <path d="M ${this.dayWidth} 0 L 0 0 0 ${this.rowHeight}" fill="none" stroke="#f1f5f9" stroke-width="1"/>
@@ -79,19 +79,22 @@ class PlanningView {
     }
 
     addEventListeners() {
-        const btnPdf = this.container.querySelector('#btn-export-pdf');
+        const btnPdf = this.container.querySelector('#btn-export-gantt-pdf');
         if (btnPdf) {
             btnPdf.addEventListener('click', () => {
                 const style = document.createElement('style');
                 style.innerHTML = `
                     @media print { 
+                        @page { size: landscape; margin: 10mm; }
+                        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                         .view-container { display: none !important; }
                         #view-planning { display: block !important; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
                         .planning-view { height: auto !important; box-shadow: none !important; border: none !important; }
-                        .gantt-chart { overflow: visible !important; display: block !important; }
-                        #gantt-timeline-container { overflow: visible !important; }
-                        .gantt-task-list { border-right: none !important; overflow: visible !important; }
-                        aside, header, #btn-export-pdf { display: none !important; }
+                        .gantt-chart { overflow: visible !important; display: grid !important; grid-template-columns: 250px 1fr !important; width: 100% !important; }
+                        #gantt-timeline-container { overflow: visible !important; width: 100% !important; }
+                        .gantt-svg { width: 100% !important; height: auto !important; max-width: 100% !important; }
+                        .gantt-task-list { border-right: 1px solid #ddd !important; overflow: visible !important; }
+                        aside, header, #btn-export-gantt-pdf { display: none !important; }
                     }
                 `;
                 document.head.appendChild(style);

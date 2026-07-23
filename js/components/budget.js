@@ -9,18 +9,27 @@ class BudgetView {
         this.container = container;
     }
 
-    render(data) {
+    render(data, projects, clients) {
         if (!data || !data.project) {
             this.container.innerHTML = '<div class="glass" style="padding: 2rem; text-align: center;">Cargando presupuesto...</div>';
             return;
         }
         const p = data.project;
+        const clientList = clients || window.state.clients || [];
+        
         this.container.innerHTML = `
             <div class="budget-view" style="animation: fadeIn 0.4s ease-out;">
                 <!-- Project Metadata Header (Screen Only) -->
                 <div id="project-meta-editor" class="glass ignore-print" style="padding: 2.5rem; border-radius: var(--radius-xl); background: white; margin-bottom: 2rem;">
                     <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; text-transform: uppercase;">Configuración del Informe</h3>
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+                        <div class="meta-field">
+                            <label>CLIENTE ASOCIADO</label>
+                            <select data-meta="clientId" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc;">
+                                <option value="">Sin asociar</option>
+                                ${clientList.map(c => `<option value="${c.id}" ${p.clientId === c.id ? 'selected' : ''}>${c.name} ${c.nif ? `(${c.nif})` : ''}</option>`).join('')}
+                            </select>
+                        </div>
                         <div class="meta-field">
                             <label>SITUACIÓN</label>
                             <input type="text" data-meta="situation" value="${p.situation || ''}" placeholder="Calle, Nº, Ciudad...">
