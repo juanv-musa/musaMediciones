@@ -487,6 +487,20 @@ function numeroALetras(num) {
         if (!data || !data.project) return;
         const totalVal = document.getElementById('project-total-val');
         if (totalVal) totalVal.textContent = (data.project.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        const progressBar = document.getElementById('project-progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const projectTotalReduced = document.getElementById('project-total-reduced');
+        
+        if (progressBar && data.project.progress !== undefined) {
+            progressBar.style.width = `${data.project.progress}%`;
+        }
+        if (progressText && data.project.progress !== undefined) {
+            progressText.textContent = `${data.project.progress.toFixed(1)}%`;
+        }
+        if (projectTotalReduced) {
+            projectTotalReduced.textContent = `${(data.project.total || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 })}€`;
+        }
     },
 
     updatePrintFields: function(data, clientList) {

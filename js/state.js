@@ -231,6 +231,17 @@ class State {
         this.calculate();
     }
 
+    updateItemPlanning(itemId, planningData) {
+        this.data.chapters.forEach(c => {
+            const item = c.items.find(i => i.id === itemId);
+            if (item) {
+                if (!item.planning) item.planning = { startDate: '', duration: 0, progress: 0 };
+                item.planning = { ...item.planning, ...planningData };
+            }
+        });
+        this.calculate();
+    }
+
     reindexOrder() {
         if (!this.data || !this.data.chapters) return;
         this.data.chapters.forEach((c, i) => {
@@ -288,9 +299,11 @@ class State {
         this.reindexOrder();
         let pem = 0;
         let totalActualSpend = 0;
+        let totalWeightedProgress = 0;
         this.data.chapters.forEach(chapter => {
             let chapterTotal = 0;
             let chapterActualSpend = 0;
+            let chapterWeightedProgress = 0;
             chapter.items.forEach(item => {
                 let itemTotalQty = 0;
                 item.measurements.forEach(m => {
@@ -301,15 +314,21 @@ class State {
                 item.total = item.qty * (item.price || 0);
                 chapterTotal += item.total;
                 chapterActualSpend += (item.actualSpend || 0);
+                
+                const progress = (item.planning && item.planning.progress) ? item.planning.progress : 0;
+                chapterWeightedProgress += item.total * (progress / 100);
             });
             chapter.total = chapterTotal;
             chapter.actualSpend = chapterActualSpend;
+            chapter.progress = chapterTotal > 0 ? (chapterWeightedProgress / chapterTotal) * 100 : 0;
             pem += chapterTotal;
             totalActualSpend += chapterActualSpend;
+            totalWeightedProgress += chapterWeightedProgress;
         });
 
         const p = this.data.project;
         p.pem = pem;
+        p.progress = pem > 0 ? (totalWeightedProgress / pem) * 100 : 0;
         p.expensesTotal = pem * (p.expensesPct / 100);
         p.benefitTotal = pem * (p.benefitPct / 100);
         p.pec = pem + p.expensesTotal + p.benefitTotal;

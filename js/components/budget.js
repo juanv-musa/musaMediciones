@@ -185,7 +185,29 @@ class BudgetView {
                     <button class="btn-move-item-up" data-id="${item.id}" style="font-size: 0.7rem; color: #64748b; background: none; border: none; cursor: pointer;"><i data-lucide="arrow-up" style="width: 14px;"></i></button>
                     <button class="btn-move-item-down" data-id="${item.id}" style="font-size: 0.7rem; color: #64748b; background: none; border: none; cursor: pointer;"><i data-lucide="arrow-down" style="width: 14px;"></i></button>
                     <button class="add-m-btn" data-id="${item.id}" style="font-size: 0.7rem; color: var(--primary); background: none; border: 1px dashed var(--primary); padding: 2px 10px; border-radius: 4px; cursor: pointer;">+ Añadir medición</button>
+                    <button class="btn-toggle-planning" data-id="${item.id}" style="font-size: 0.7rem; color: #f59e0b; background: none; border: 1px dashed #f59e0b; padding: 2px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;"><i data-lucide="calendar" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>Planificación</button>
                     <button class="btn-delete-item" data-id="${item.id}" style="font-size: 0.7rem; color: #ef4444; background: none; border: none; margin-left: 10px; cursor: pointer;">Eliminar partida</button>
+                </div>
+                
+                <!-- Planning Drawer -->
+                <div class="planning-drawer ignore-print" id="planning-drawer-${item.id}" style="display: none; background: #fffbeb; padding: 15px; border-top: 1px dashed #fde68a; font-size: 0.8rem;">
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #b45309; font-weight: 700; margin-bottom: 4px;">Fecha Inicio</label>
+                            <input type="date" class="plan-start-date" data-id="${item.id}" value="${item.planning?.startDate || ''}" style="padding: 4px; border: 1px solid #fcd34d; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #b45309; font-weight: 700; margin-bottom: 4px;">Duración (días)</label>
+                            <input type="number" class="plan-duration" data-id="${item.id}" value="${item.planning?.duration || 0}" min="0" style="padding: 4px; width: 60px; border: 1px solid #fcd34d; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #b45309; font-weight: 700; margin-bottom: 4px;">Progreso (%)</label>
+                            <input type="number" class="plan-progress" data-id="${item.id}" value="${item.planning?.progress || 0}" min="0" max="100" style="padding: 4px; width: 60px; border: 1px solid #fcd34d; border-radius: 4px;">
+                        </div>
+                        <div style="flex: 1; text-align: right; color: #d97706; font-size: 0.75rem;">
+                            <em>Calculado automáticamente en el diagrama de Gantt.</em>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -271,6 +293,36 @@ class BudgetView {
                     item.measurements.push({ id: 'M' + Date.now(), units: 1, length: 1, width: 1, height: 1, subtotal: 1 });
                     window.state.calculate();
                 }
+            });
+        });
+
+        // Planning drawer toggles
+        this.container.querySelectorAll('.btn-toggle-planning').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const drawer = this.container.querySelector(`#planning-drawer-${btn.getAttribute('data-id')}`);
+                if (drawer) {
+                    drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Planning fields updates
+        this.container.querySelectorAll('.plan-start-date').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const id = e.target.getAttribute('data-id');
+                window.state.updateItemPlanning(id, { startDate: e.target.value });
+            });
+        });
+        this.container.querySelectorAll('.plan-duration').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const id = e.target.getAttribute('data-id');
+                window.state.updateItemPlanning(id, { duration: parseInt(e.target.value) || 0 });
+            });
+        });
+        this.container.querySelectorAll('.plan-progress').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const id = e.target.getAttribute('data-id');
+                window.state.updateItemPlanning(id, { progress: parseInt(e.target.value) || 0 });
             });
         });
 

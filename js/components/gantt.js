@@ -96,8 +96,9 @@ class PlanningView {
     getMaxDate(flattened, minDate) {
         let max = new Date(minDate);
         flattened.forEach(f => {
-            if (f.item.planning && f.item.planning.endDate) {
-                const end = new Date(f.item.planning.endDate);
+            if (f.item.planning && f.item.planning.startDate) {
+                const end = new Date(f.item.planning.startDate);
+                end.setDate(end.getDate() + (f.item.planning.duration || 1));
                 if (end > max) max = end;
             }
         });
@@ -132,16 +133,20 @@ class PlanningView {
         const diffDays = Math.ceil((start - minDate) / (1000 * 60 * 60 * 24));
         const x = diffDays * this.dayWidth + 10;
         const y = idx * this.rowHeight + 15;
-        const width = (item.planning.duration || 1) * this.dayWidth - 20;
+        const duration = item.planning.duration || 1;
+        const width = Math.max(duration * this.dayWidth - 20, 10);
+        const progress = item.planning.progress || 0;
+        const progressWidth = width * (progress / 100);
 
         const color = this.colors[f.chapterIdx % this.colors.length];
 
         return `
             <g class="gantt-item-group" data-id="${item.id}" style="cursor: pointer;">
-                <rect x="${x}" y="${y}" width="${Math.max(width, 10)}" height="30" fill="${color}" rx="15" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
-                    <title>${item.descShort}: ${item.planning.startDate} a ${item.planning.endDate}</title>
+                <rect x="${x}" y="${y}" width="${width}" height="30" fill="${color}" fill-opacity="0.3" rx="15" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
+                    <title>${item.descShort}: ${duration} días</title>
                 </rect>
-                <text x="${x + Math.max(width, 10) / 2}" y="${y + 20}" text-anchor="middle" fill="white" style="font-size: 10px; font-weight: 700; pointer-events: none;">${item.planning.duration || 1}d</text>
+                ${progress > 0 ? `<rect x="${x}" y="${y}" width="${progressWidth}" height="30" fill="${color}" rx="15" />` : ''}
+                <text x="${x + width / 2}" y="${y + 20}" text-anchor="middle" fill="#111" style="font-size: 10px; font-weight: 700; pointer-events: none;">${duration}d (${progress}%)</text>
             </g>
         `;
     }
