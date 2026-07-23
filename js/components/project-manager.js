@@ -58,7 +58,7 @@ class ProjectManagerView {
                     <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.5rem;">${project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€</div>
                     
                     <div style="display: flex; gap: 0.8rem;">
-                        <button class="btn-load-project btn-musa" data-id="${project.id}" style="flex: 1; ${isActive ? 'opacity: 0.5; pointer-events: none;' : ''}">Abrir</button>
+                        <button class="btn-load-project btn-musa" data-id="${project.id}" style="flex: 1; ${isActive ? 'background: var(--primary-hover);' : ''}">${isActive ? 'Continuar Editando' : 'Abrir'}</button>
                         <button class="btn-delete-project" data-id="${project.id}" style="padding: 0.8rem; border-radius: 0.75rem; border: 1px solid #fee2e2; color: #ef4444; background: #fff; cursor: pointer;">
                             <i data-lucide="trash-2" style="width: 18px;"></i>
                         </button>
