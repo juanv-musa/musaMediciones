@@ -153,6 +153,36 @@ nav ul {
 }
 
 /* Budget View */
+.meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.meta-field label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.meta-field input, .meta-field select {
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #f8fafc;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.meta-field input:focus, .meta-field select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(140, 198, 63, 0.1);
+}
+
 .partida {
     background: white;
     margin: 0.5rem 0;

@@ -25,7 +25,7 @@ class BudgetView {
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
                         <div class="meta-field">
                             <label>CLIENTE ASOCIADO</label>
-                            <select data-meta="clientId" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc;">
+                            <select data-meta="clientId">
                                 <option value="">Sin asociar</option>
                                 ${clientList.map(c => `<option value="${c.id}" ${p.clientId === c.id ? 'selected' : ''}>${c.name} ${c.nif ? `(${c.nif})` : ''}</option>`).join('')}
                             </select>
@@ -52,7 +52,7 @@ class BudgetView {
                         </div>
                         <div class="meta-field">
                             <label>G.G. (%) <span style="font-size: 0.6rem; color: var(--primary);">(13% / 19% Patr.)</span></label>
-                            <select data-meta="expensesPct" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc;">
+                            <select data-meta="expensesPct">
                                 <option value="13" ${p.expensesPct === 13 ? 'selected' : ''}>13% (General)</option>
                                 <option value="19" ${p.expensesPct === 19 ? 'selected' : ''}>19% (Patrimonio)</option>
                                 <option value="0" ${p.expensesPct === 0 ? 'selected' : ''}>0% (Sin G.G.)</option>
