@@ -202,7 +202,7 @@ class State {
         if (chapter) {
             const itemOrder = `${chapter.order}.${(chapter.items.length + 1).toString().padStart(2, '0')}`;
             chapter.items.push({
-                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: '', unit: 'ud', price: 0, qty: 0, total: 0, actualSpend: 0, measurements: [],
+                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: 'Añadir descripción detallada de la partida...', unit: 'ud', price: 0, qty: 0, total: 0, actualSpend: 0, measurements: [],
                 planning: { startDate: '', endDate: '', duration: 1, dependencies: [] },
                 ...itemData
             });
@@ -231,8 +231,61 @@ class State {
         this.calculate();
     }
 
+    reindexOrder() {
+        if (!this.data || !this.data.chapters) return;
+        this.data.chapters.forEach((c, i) => {
+            c.order = (i + 1).toString().padStart(2, '0');
+            c.items.forEach((item, j) => {
+                item.order = `${c.order}.${(j + 1).toString().padStart(2, '0')}`;
+            });
+        });
+    }
+
+    moveChapter(chapterId, direction) {
+        const idx = this.data.chapters.findIndex(c => c.id === chapterId);
+        if (idx < 0) return;
+        const newIdx = idx + direction;
+        if (newIdx >= 0 && newIdx < this.data.chapters.length) {
+            const temp = this.data.chapters[idx];
+            this.data.chapters[idx] = this.data.chapters[newIdx];
+            this.data.chapters[newIdx] = temp;
+            this.calculate();
+        }
+    }
+
+    moveItem(itemId, direction) {
+        for (let chapterIndex = 0; chapterIndex < this.data.chapters.length; chapterIndex++) {
+            let c = this.data.chapters[chapterIndex];
+            const idx = c.items.findIndex(i => i.id === itemId);
+            if (idx >= 0) {
+                const newIdx = idx + direction;
+                
+                if (newIdx >= 0 && newIdx < c.items.length) {
+                    // Move within the same chapter
+                    const temp = c.items[idx];
+                    c.items[idx] = c.items[newIdx];
+                    c.items[newIdx] = temp;
+                } else if (newIdx < 0 && chapterIndex > 0) {
+                    // Move UP to the previous chapter
+                    const itemToMove = c.items.splice(idx, 1)[0];
+                    const prevChapter = this.data.chapters[chapterIndex - 1];
+                    prevChapter.items.push(itemToMove);
+                } else if (newIdx >= c.items.length && chapterIndex < this.data.chapters.length - 1) {
+                    // Move DOWN to the next chapter
+                    const itemToMove = c.items.splice(idx, 1)[0];
+                    const nextChapter = this.data.chapters[chapterIndex + 1];
+                    nextChapter.items.unshift(itemToMove);
+                }
+                
+                this.calculate();
+                return;
+            }
+        }
+    }
+
     calculate() {
         if (!this.data || !this.data.project) return;
+        this.reindexOrder();
         let pem = 0;
         let totalActualSpend = 0;
         this.data.chapters.forEach(chapter => {

@@ -98,6 +98,8 @@ class BudgetView {
                         <div contenteditable="true" class="chapter-title-edit" data-id="${chapter.id}" style="border-bottom: 1px dashed transparent; outline: none;">${chapter.title}</div>
                     </div>
                     <div class="chapter-actions ignore-print" style="display: flex; gap: 10px; opacity: 0.5;">
+                        <i data-lucide="arrow-up" class="btn-move-chapter-up" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
+                        <i data-lucide="arrow-down" class="btn-move-chapter-down" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
                         <i data-lucide="edit-3" class="btn-rename-chapter" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
                         <i data-lucide="trash-2" class="btn-delete-chapter" data-id="${chapter.id}" style="width: 14px; cursor: pointer; color: #ef4444;"></i>
                     </div>
@@ -178,6 +180,8 @@ class BudgetView {
                 `).join('')}
 
                 <div class="ignore-print" style="padding: 5px 15px 15px 95px;">
+                    <button class="btn-move-item-up" data-id="${item.id}" style="font-size: 0.7rem; color: #64748b; background: none; border: none; cursor: pointer;"><i data-lucide="arrow-up" style="width: 14px;"></i></button>
+                    <button class="btn-move-item-down" data-id="${item.id}" style="font-size: 0.7rem; color: #64748b; background: none; border: none; cursor: pointer;"><i data-lucide="arrow-down" style="width: 14px;"></i></button>
                     <button class="add-m-btn" data-id="${item.id}" style="font-size: 0.7rem; color: var(--primary); background: none; border: 1px dashed var(--primary); padding: 2px 10px; border-radius: 4px; cursor: pointer;">+ Añadir medición</button>
                     <button class="btn-delete-item" data-id="${item.id}" style="font-size: 0.7rem; color: #ef4444; background: none; border: none; margin-left: 10px; cursor: pointer;">Eliminar partida</button>
                 </div>
@@ -291,6 +295,22 @@ class BudgetView {
                    window.state.calculate();
                 }
             });
+        });
+
+        this.container.querySelectorAll('.btn-move-chapter-up').forEach(btn => {
+            btn.addEventListener('click', () => window.state.moveChapter(btn.getAttribute('data-id'), -1));
+        });
+
+        this.container.querySelectorAll('.btn-move-chapter-down').forEach(btn => {
+            btn.addEventListener('click', () => window.state.moveChapter(btn.getAttribute('data-id'), 1));
+        });
+
+        this.container.querySelectorAll('.btn-move-item-up').forEach(btn => {
+            btn.addEventListener('click', () => window.state.moveItem(btn.getAttribute('data-id'), -1));
+        });
+
+        this.container.querySelectorAll('.btn-move-item-down').forEach(btn => {
+            btn.addEventListener('click', () => window.state.moveItem(btn.getAttribute('data-id'), 1));
         });
     }
 }
