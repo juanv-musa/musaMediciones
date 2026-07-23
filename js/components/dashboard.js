@@ -19,7 +19,7 @@ class DashboardView {
             <div class="dashboard-view view-container" style="animation: fadeIn 0.4s ease-out;">
                 <h2 style="margin-bottom: 2rem; font-weight: 800; font-size: 2.2rem; color: var(--text-primary);">Dashboard del Proyecto</h2>
                 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                     <div class="glass" style="padding: 2rem; border-radius: var(--radius-xl); border-bottom: 5px solid var(--primary); background: white;">
                         <div style="color: var(--text-secondary); font-size: 0.95rem; margin: 0 0 0.8rem 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Presupuesto Total</div>
                         <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">${data.project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€</div>
@@ -34,7 +34,7 @@ class DashboardView {
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
                     <div class="glass" style="padding: 2.5rem; border-radius: var(--radius-xl); background: white;">
                         <h3 style="margin-bottom: 2rem; font-size: 1.4rem; font-weight: 700;">Distribución por Capítulos</h3>
                         <div style="display: flex; flex-direction: column; gap: 1.5rem; max-height: 300px; overflow-y: auto; padding-right: 1rem;">

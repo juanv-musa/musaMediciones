@@ -105,7 +105,7 @@ class PortfolioView {
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
                     <!-- Projects List -->
                     <div class="glass" style="padding: 2rem; border-radius: var(--radius-xl); background: white;">
                         <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem;">
