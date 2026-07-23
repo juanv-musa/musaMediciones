@@ -52,7 +52,7 @@
                 font-size: 10pt;
             }
             .background-blobs, aside, .user-actions, .price-library, 
-            #btn-save, #btn-export-excel, #btn-new-project-quick, 
+            #btn-save, #btn-export-excel, #btn-export-pdf, #btn-new-project-quick, 
             #add-measurement-btn, .add-item-btn, .chapter-actions,
             #measurement-panel, .ignore-print, #project-meta-editor {
                 display: none !important;
@@ -178,8 +178,11 @@
                 </span>
             </div>
             <div class="user-actions" style="display: flex; gap: 1rem;">
+                <button id="btn-export-pdf" class="btn-musa" style="background: white; color: #ef4444; border: 1px solid #fee2e2;">
+                    PDF Multihola
+                </button>
                 <button id="btn-export-excel" class="btn-musa" style="background: white; color: #059669; border: 1px solid #dcfce7;">
-                    Excel (.csv)
+                    Excel (.xlsx)
                 </button>
                 <button id="btn-new-project-quick" class="btn-musa" title="Nuevo Presupuesto" style="background: white; border: 1px solid var(--border); color: var(--text-secondary);">
                     <i data-lucide="plus" style="width: 18px;"></i>
@@ -237,6 +240,7 @@
         </aside>
 
         <main id="main-content">
+            <div id="pdf-report-container" style="display: none;"></div>
             <div id="view-portfolio" class="view-container"></div>
             <div id="view-dashboard" class="view-container" style="display: none;"></div>
             <div id="view-projects" class="view-container" style="display: none;"></div>
@@ -430,6 +434,8 @@
             }
         };
     </script>
+    <!-- SheetJS para exportación XLSX -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="js/state.js?v=6" defer></script>
     <script src="js/components/portfolio.js?v=7" defer></script>
     <script src="js/components/dashboard.js?v=6" defer></script>

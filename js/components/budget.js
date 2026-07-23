@@ -98,10 +98,10 @@ class BudgetView {
                         <div contenteditable="true" class="chapter-title-edit" data-id="${chapter.id}" style="border-bottom: 1px dashed transparent; outline: none;">${chapter.title}</div>
                     </div>
                     <div class="chapter-actions ignore-print" style="display: flex; gap: 10px; opacity: 0.5;">
-                        <i data-lucide="arrow-up" class="btn-move-chapter-up" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
-                        <i data-lucide="arrow-down" class="btn-move-chapter-down" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
-                        <i data-lucide="edit-3" class="btn-rename-chapter" data-id="${chapter.id}" style="width: 14px; cursor: pointer;"></i>
-                        <i data-lucide="trash-2" class="btn-delete-chapter" data-id="${chapter.id}" style="width: 14px; cursor: pointer; color: #ef4444;"></i>
+                        <span class="btn-move-chapter-up" data-id="${chapter.id}" style="cursor: pointer;"><i data-lucide="arrow-up" style="width: 14px;"></i></span>
+                        <span class="btn-move-chapter-down" data-id="${chapter.id}" style="cursor: pointer;"><i data-lucide="arrow-down" style="width: 14px;"></i></span>
+                        <span class="btn-rename-chapter" data-id="${chapter.id}" style="cursor: pointer;"><i data-lucide="edit-3" style="width: 14px;"></i></span>
+                        <span class="btn-delete-chapter" data-id="${chapter.id}" style="cursor: pointer; color: #ef4444;"><i data-lucide="trash-2" style="width: 14px;"></i></span>
                     </div>
                 </div>
                 
