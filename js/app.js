@@ -149,127 +149,316 @@ window.musaApp = {
             }
         });
 
+// --- HELPER: Numero a Letras ---
+function numeroALetras(num) {
+    const Unidades = num => {
+        switch(num) {
+            case 1: return 'UN'; case 2: return 'DOS'; case 3: return 'TRES';
+            case 4: return 'CUATRO'; case 5: return 'CINCO'; case 6: return 'SEIS';
+            case 7: return 'SIETE'; case 8: return 'OCHO'; case 9: return 'NUEVE';
+        }
+        return '';
+    };
+    const Decenas = num => {
+        let decena = Math.floor(num/10);
+        let unidad = num - (decena * 10);
+        switch(decena) {
+            case 1:
+                switch(unidad) {
+                    case 0: return 'DIEZ'; case 1: return 'ONCE'; case 2: return 'DOCE';
+                    case 3: return 'TRECE'; case 4: return 'CATORCE'; case 5: return 'QUINCE';
+                    default: return 'DIECI' + Unidades(unidad);
+                }
+            case 2:
+                switch(unidad) {
+                    case 0: return 'VEINTE';
+                    default: return 'VEINTI' + Unidades(unidad);
+                }
+            case 3: return DecenasY('TREINTA', unidad);
+            case 4: return DecenasY('CUARENTA', unidad);
+            case 5: return DecenasY('CINCUENTA', unidad);
+            case 6: return DecenasY('SESENTA', unidad);
+            case 7: return DecenasY('SETENTA', unidad);
+            case 8: return DecenasY('OCHENTA', unidad);
+            case 9: return DecenasY('NOVENTA', unidad);
+            case 0: return Unidades(unidad);
+        }
+    };
+    const DecenasY = (strSin, numUnidades) => {
+        if (numUnidades > 0) return strSin + ' Y ' + Unidades(numUnidades)
+        return strSin;
+    };
+    const Centenas = num => {
+        let centenas = Math.floor(num / 100);
+        let decenas = num - (centenas * 100);
+        switch(centenas) {
+            case 1:
+                if (decenas > 0) return 'CIENTO ' + Decenas(decenas);
+                return 'CIEN';
+            case 2: return 'DOSCIENTOS ' + Decenas(decenas);
+            case 3: return 'TRESCIENTOS ' + Decenas(decenas);
+            case 4: return 'CUATROCIENTOS ' + Decenas(decenas);
+            case 5: return 'QUINIENTOS ' + Decenas(decenas);
+            case 6: return 'SEISCIENTOS ' + Decenas(decenas);
+            case 7: return 'SETECIENTOS ' + Decenas(decenas);
+            case 8: return 'OCHOCIENTOS ' + Decenas(decenas);
+            case 9: return 'NOVECIENTOS ' + Decenas(decenas);
+        }
+        return Decenas(decenas);
+    };
+    const Seccion = (num, divisor, strSingular, strPlural) => {
+        let cientos = Math.floor(num / divisor)
+        let resto = num - (cientos * divisor)
+        let letras = '';
+        if (cientos > 0)
+            if (cientos > 1) letras = Centenas(cientos) + ' ' + strPlural;
+            else letras = strSingular;
+        if (resto > 0) letras += '';
+        return letras;
+    };
+    const Miles = num => {
+        let divisor = 1000;
+        let cientos = Math.floor(num / divisor)
+        let resto = num - (cientos * divisor)
+        let strMiles = Seccion(num, divisor, 'MIL', 'MIL');
+        let strCentenas = Centenas(resto);
+        if(strMiles == '') return strCentenas;
+        return strMiles + ' ' + strCentenas;
+    };
+    const Millones = num => {
+        let divisor = 1000000;
+        let cientos = Math.floor(num / divisor)
+        let resto = num - (cientos * divisor)
+        let strMillones = Seccion(num, divisor, 'UN MILLON', 'MILLONES');
+        let strMiles = Miles(resto);
+        if(strMillones == '') return strMiles;
+        return strMillones + ' ' + strMiles;
+    };
+    if (num == 0) return 'CERO EUROS';
+    let enteros = Math.floor(num);
+    let centavos = Math.round((num - enteros) * 100);
+    let letrasEnteros = Millones(enteros).trim();
+    let letrasCentavos = '';
+    if (centavos > 0) {
+        let letrasCentavosPart = Decenas(centavos).trim();
+        letrasCentavos = ' CON ' + letrasCentavosPart + (centavos === 1 ? ' CENTIMO' : ' CENTIMOS');
+    }
+    return letrasEnteros + (enteros === 1 ? ' EURO' : ' EUROS') + letrasCentavos;
+}
+
+function promptExportData() {
+    const p = window.state.data.project;
+    const situacion = prompt("Situación (opcional):", p.situacion || "");
+    const propiedad = prompt("Propiedad (opcional):", p.propiedad || "");
+    if (situacion !== null) p.situacion = situacion;
+    if (propiedad !== null) p.propiedad = propiedad;
+    return window.state.data;
+}
+
         const btnExcel = document.getElementById('btn-export-excel');
         if (btnExcel) btnExcel.addEventListener('click', () => {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
             if (typeof XLSX === 'undefined') { alert('La librería XLSX aún se está cargando. Por favor, espera un segundo.'); return; }
             
-            const d = window.state.data;
+            const d = promptExportData();
             const wb = XLSX.utils.book_new();
+            const p = d.project;
 
             // Hoja 1: Información
             const infoData = [
-                ['DATOS DEL PROYECTO'],
-                ['Nombre', d.project.name],
-                ['Presupuesto Total', d.project.total.toFixed(2) + ' €'],
-                ['Fecha Exportación', new Date().toLocaleDateString('es-ES')]
+                ['MEDICIONES Y PRESUPUESTO'],
+                [],
+                ['PROYECTO:', p.name],
+                ['SITUACION:', p.situacion || ''],
+                ['PROPIEDAD:', p.propiedad || '']
             ];
             const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
-            XLSX.utils.book_append_sheet(wb, wsInfo, "Información");
+            XLSX.utils.book_append_sheet(wb, wsInfo, "Portada");
 
-            // Hoja 2: Resumen Capítulos
-            const resumenData = [['Capítulo', 'Título', 'Total (€)']];
+            // Hoja 2: Detalle (Presto Style)
+            const detalleData = [['Ord.', 'Descripción', 'Uds.', 'Largo', 'Ancho', 'Alto', 'Subtotal', 'Precio', 'Importe']];
+            d.chapters.forEach(c => {
+                detalleData.push([c.order, c.title, '', '', '', '', '', '', '']);
+                c.items.forEach(i => {
+                    detalleData.push([i.order, i.unit + '  ' + i.descShort, '', '', '', '', '', '', '']);
+                    if (i.descLong && i.descLong !== 'Añadir descripción detallada de la partida...') {
+                        detalleData.push(['', i.descLong, '', '', '', '', '', '', '']);
+                    }
+                    i.measurements.forEach(m => {
+                        detalleData.push(['', m.desc || '', m.units, m.length, m.width, m.height, m.subtotal, '', '']);
+                    });
+                    detalleData.push(['', 'TOTAL PARTIDA ' + i.order, '', '', '', '', i.qty.toFixed(2), i.price.toFixed(2), i.total.toFixed(2)]);
+                    detalleData.push(['', '', '', '', '', '', '', '', '']);
+                });
+                detalleData.push(['', 'TOTAL CAPÍTULO ' + c.order, '', '', '', '', '', '', c.total.toFixed(2)]);
+                detalleData.push(['', '', '', '', '', '', '', '', '']);
+            });
+            const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
+            XLSX.utils.book_append_sheet(wb, wsDetalle, "Mediciones");
+
+            // Hoja 3: Resumen
+            const resumenData = [['Ord.', 'Descripción', 'Importe']];
             d.chapters.forEach(c => {
                 resumenData.push([c.order, c.title, c.total.toFixed(2)]);
             });
-            resumenData.push(['', 'TOTAL GENERAL', d.project.total.toFixed(2)]);
+            resumenData.push(['', '', '']);
+            resumenData.push(['', 'SUMA EJECUCIÓN MATERIAL', p.pem.toFixed(2)]);
+            resumenData.push(['', `Gastos generales ${p.expensesPct}%`, p.expensesTotal.toFixed(2)]);
+            resumenData.push(['', `Beneficio industrial ${p.benefitPct}%`, p.benefitTotal.toFixed(2)]);
+            resumenData.push(['', 'SUMA', p.pec.toFixed(2)]);
+            resumenData.push(['', `I.V.A. ${p.taxPct}%`, p.taxTotal.toFixed(2)]);
+            resumenData.push(['', 'Total presupuesto', p.total.toFixed(2)]);
+            
             const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-            XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen Capítulos");
+            XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
 
-            // Hoja 3: Detalle
-            const detalleData = [['Capítulo', 'Partida', 'Descripción Corta', 'Descripción Larga', 'Unidad', 'Cantidad', 'Precio (€)', 'Importe (€)']];
-            d.chapters.forEach(c => {
-                c.items.forEach(i => {
-                    detalleData.push([c.title, i.order, i.descShort, i.descLong, i.unit, i.qty.toFixed(2), i.price.toFixed(2), i.total.toFixed(2)]);
-                });
-            });
-            detalleData.push(['', '', '', '', '', '', 'TOTAL', d.project.total.toFixed(2)]);
-            const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
-            XLSX.utils.book_append_sheet(wb, wsDetalle, "Presupuesto Detallado");
-
-            // Generar y descargar
-            XLSX.writeFile(wb, (d.project.name || 'presupuesto') + '.xlsx');
+            XLSX.writeFile(wb, (p.name || 'presupuesto') + '.xlsx');
         });
 
         const btnPdf = document.getElementById('btn-export-pdf');
         if (btnPdf) btnPdf.addEventListener('click', () => {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
-            const d = window.state.data;
+            const d = promptExportData();
+            const p = d.project;
             const container = document.getElementById('pdf-report-container');
             
             let html = `
-                <!-- PORTADA / INFORMACIÓN -->
-                <div style="page-break-after: always; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 2rem;">
-                    <h1 style="font-size: 3rem; margin-bottom: 2rem; color: #111827;">${d.project.name}</h1>
-                    <div style="font-size: 1.2rem; color: #4B5563; margin-bottom: 1rem;"><strong>Fecha de Generación:</strong> ${new Date().toLocaleDateString('es-ES')}</div>
-                    <div style="font-size: 1.5rem; color: var(--primary); font-weight: 800; margin-top: 2rem;">Presupuesto Total: ${d.project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</div>
+                <div style="font-family: 'Inter', Arial, sans-serif; font-size: 10pt; color: #000; background: #fff;">
+                <!-- PORTADA -->
+                <div style="page-break-after: always; padding: 40px;">
+                    <h1 style="font-size: 24pt; font-weight: normal; margin-bottom: 60px;">MEDICIONES Y PRESUPUESTO</h1>
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 20px; font-size: 11pt;">
+                        <div style="font-weight: bold;">PROYECTO:</div>
+                        <div>${p.name.toUpperCase()}</div>
+                        <div style="font-weight: bold;">SITUACION:</div>
+                        <div>${(p.situacion || '').toUpperCase()}</div>
+                        <div style="font-weight: bold;">PROPIEDAD:</div>
+                        <div>${(p.propiedad || '').toUpperCase()}</div>
+                    </div>
                 </div>
 
-                <!-- RESUMEN DE CAPÍTULOS -->
-                <div style="page-break-after: always; padding: 2rem;">
-                    <h2 style="font-size: 2rem; margin-bottom: 2rem; border-bottom: 2px solid #000; padding-bottom: 0.5rem;">Resumen de Presupuesto</h2>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 1.1rem;">
+                <!-- MEDICIONES -->
+                <div style="page-break-after: always;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
                         <thead>
-                            <tr style="border-bottom: 2px solid #000; text-align: left;">
-                                <th style="padding: 10px 0;">Capítulo</th>
-                                <th style="padding: 10px 0;">Título</th>
-                                <th style="padding: 10px 0; text-align: right;">Total</th>
+                            <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                                <th style="text-align: left; padding: 4px; width: 50px;">Ord.</th>
+                                <th style="text-align: left; padding: 4px;">Descripción</th>
+                                <th style="text-align: right; padding: 4px; width: 50px;">Uds.</th>
+                                <th style="text-align: right; padding: 4px; width: 60px;">Largo</th>
+                                <th style="text-align: right; padding: 4px; width: 60px;">Ancho</th>
+                                <th style="text-align: right; padding: 4px; width: 60px;">Alto</th>
+                                <th style="text-align: right; padding: 4px; width: 70px;">Subtotal</th>
+                                <th style="text-align: right; padding: 4px; width: 70px;">Precio</th>
+                                <th style="text-align: right; padding: 4px; width: 80px;">Importe</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${d.chapters.map(c => `
-                                <tr style="border-bottom: 1px solid #ccc;">
-                                    <td style="padding: 10px 0;">${c.order}</td>
-                                    <td style="padding: 10px 0;">${c.title}</td>
-                                    <td style="padding: 10px 0; text-align: right;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</td>
+                                <tr>
+                                    <td style="padding: 8px 4px; font-weight: normal;">${c.order}</td>
+                                    <td colspan="8" style="padding: 8px 4px; font-weight: normal;">${c.title.toUpperCase()}</td>
                                 </tr>
+                                ${c.items.map(i => `
+                                    <tr>
+                                        <td style="padding: 8px 4px; vertical-align: top;">${i.order}</td>
+                                        <td style="padding: 8px 4px; vertical-align: top;">
+                                            ${i.unit} &nbsp;&nbsp; ${i.descShort.toUpperCase()}<br>
+                                            <div style="margin-top: 8px; color: #444; text-align: justify; padding-right: 20px;">
+                                                ${i.descLong === 'Añadir descripción detallada de la partida...' ? '' : (i.descLong || '').replace(/\\n/g, '<br>')}
+                                            </div>
+                                        </td>
+                                        <td colspan="7"></td>
+                                    </tr>
+                                    ${i.measurements.map(m => `
+                                        <tr>
+                                            <td></td>
+                                            <td style="padding: 2px 4px;">${m.desc || ''}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.units || ''}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.length || ''}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.width || ''}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.height || ''}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.subtotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                            <td colspan="2"></td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td colspan="4" style="padding: 8px 4px; text-align: right;">TOTAL PARTIDA ${i.order}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.qty.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.price.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                    </tr>
+                                    <tr><td colspan="9" style="height: 15px;"></td></tr>
+                                `).join('')}
+                                <tr>
+                                    <td colspan="7"></td>
+                                    <td style="padding: 8px 4px; text-align: right; font-weight: bold;">TOTAL CAPÍTULO ${c.order}</td>
+                                    <td style="padding: 8px 4px; text-align: right; font-weight: bold;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                </tr>
+                                <tr><td colspan="9" style="height: 30px;"></td></tr>
                             `).join('')}
                         </tbody>
-                        <tfoot>
-                            <tr style="font-weight: bold; font-size: 1.3rem;">
-                                <td colspan="2" style="padding: 20px 0; text-align: right;">TOTAL GENERAL:</td>
-                                <td style="padding: 20px 0; text-align: right;">${d.project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
 
-                <!-- PRESUPUESTO DETALLADO -->
-                <div style="padding: 2rem;">
-                    <h2 style="font-size: 2rem; margin-bottom: 2rem; border-bottom: 2px solid #000; padding-bottom: 0.5rem;">Presupuesto Detallado</h2>
-                    ${d.chapters.map(c => `
-                        <div style="margin-bottom: 30px; page-break-inside: avoid;">
-                            <div style="background: #f1f5f9; padding: 10px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">CAPÍTULO ${c.order} - ${c.title}</div>
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                                <thead>
-                                    <tr style="border-bottom: 1px solid #000; text-align: left;">
-                                        <th style="padding: 5px; width: 60px;">Ord</th>
-                                        <th style="padding: 5px;">Descripción</th>
-                                        <th style="padding: 5px; text-align: right; width: 60px;">Ud</th>
-                                        <th style="padding: 5px; text-align: right; width: 80px;">Cant.</th>
-                                        <th style="padding: 5px; text-align: right; width: 100px;">Precio</th>
-                                        <th style="padding: 5px; text-align: right; width: 100px;">Importe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${c.items.map(i => `
-                                        <tr style="border-bottom: 1px solid #eee;">
-                                            <td style="padding: 8px 5px; vertical-align: top;">${i.order}</td>
-                                            <td style="padding: 8px 5px; vertical-align: top;">
-                                                <div style="font-weight: bold;">${i.descShort}</div>
-                                                <div style="font-size: 0.8rem; color: #555; margin-top: 4px;">${i.descLong === 'Añadir descripción detallada de la partida...' ? '' : (i.descLong || '')}</div>
-                                            </td>
-                                            <td style="padding: 8px 5px; text-align: right; vertical-align: top;">${i.unit}</td>
-                                            <td style="padding: 8px 5px; text-align: right; vertical-align: top;">${i.qty.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
-                                            <td style="padding: 8px 5px; text-align: right; vertical-align: top;">${i.price.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</td>
-                                            <td style="padding: 8px 5px; text-align: right; vertical-align: top; font-weight: bold;">${i.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                            <div style="text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #ccc; margin-top: 5px;">Total Capítulo ${c.order}: ${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</div>
+                <!-- RESUMEN -->
+                <div style="padding: 40px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                        <thead>
+                            <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                                <th style="text-align: left; padding: 8px; width: 60px;">Ord.</th>
+                                <th style="text-align: left; padding: 8px;">Descripción</th>
+                                <th style="text-align: right; padding: 8px; width: 120px;">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${d.chapters.map(c => `
+                                <tr>
+                                    <td style="padding: 8px;">${c.order}</td>
+                                    <td style="padding: 8px;">${c.title.toUpperCase()}</td>
+                                    <td style="padding: 8px; text-align: right;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="width: 400px; margin-left: auto; margin-top: 40px;">
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
+                            <div>SUMA EJECUCIÓN MATERIAL</div>
+                            <div style="text-align: right;">${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
                         </div>
-                    `).join('')}
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
+                            <div>Gastos generales ${p.expensesPct}%</div>
+                            <div style="text-align: right;">${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
+                            <div>Beneficio industrial ${p.benefitPct}%</div>
+                            <div style="text-align: right;">${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 12px 0;">
+                            <div>SUMA</div>
+                            <div style="text-align: right;">${p.pec.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
+                            <div>I.V.A. ${p.taxPct}%</div>
+                            <div style="text-align: right;">${p.taxTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 12px 0; font-weight: bold;">
+                            <div>Total presupuesto</div>
+                            <div style="text-align: right;">${p.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 60px; text-align: justify; font-size: 11pt;">
+                        Asciende el presente documento a la expresada cantidad de<br>
+                        <strong style="text-transform: uppercase;">${numeroALetras(p.total)}</strong>
+                    </div>
+                    
+                    <div style="margin-top: 60px; text-align: center; text-transform: uppercase;">
+                        ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </div>
+                </div>
                 </div>
             `;
             
@@ -278,7 +467,17 @@ window.musaApp = {
             
             setTimeout(() => {
                 window.print();
-                setTimeout(() => { container.style.display = 'none'; }, 1000);
+                window.onafterprint = function() {
+                    container.style.display = 'none';
+                    container.innerHTML = '';
+                    window.onafterprint = null;
+                };
+                setTimeout(() => { 
+                    if(container.style.display === 'block') {
+                        container.style.display = 'none'; 
+                        container.innerHTML = '';
+                    }
+                }, 3000); // Only a fallback in case onafterprint doesn't trigger
             }, 100);
         });
 
