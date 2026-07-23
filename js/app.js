@@ -457,19 +457,15 @@ function numeroALetras(num) {
             container.style.display = 'block';
             
             setTimeout(() => {
-                window.print();
-                window.onafterprint = function() {
+                const afterPrintHandler = () => {
                     container.style.display = 'none';
                     container.innerHTML = '';
-                    window.onafterprint = null;
+                    window.removeEventListener('afterprint', afterPrintHandler);
                 };
-                setTimeout(() => { 
-                    if(container.style.display === 'block') {
-                        container.style.display = 'none'; 
-                        container.innerHTML = '';
-                    }
-                }, 3000); // Only a fallback in case onafterprint doesn't trigger
-            }, 100);
+                window.addEventListener('afterprint', afterPrintHandler);
+                
+                window.print();
+            }, 300);
         });
 
         this.switchView('portfolio');
