@@ -22,7 +22,7 @@ class DashboardView {
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                     <div class="glass" style="padding: 2rem; border-radius: var(--radius-xl); border-bottom: 5px solid var(--primary); background: white;">
                         <div style="color: var(--text-secondary); font-size: 0.95rem; margin: 0 0 0.8rem 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Presupuesto Total</div>
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">${data.project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€</div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">${data.project.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</div>
                     </div>
                     <div class="glass" style="padding: 2rem; border-radius: var(--radius-xl); border-bottom: 5px solid var(--secondary); background: white;">
                         <div style="color: var(--text-secondary); font-size: 0.95rem; margin: 0 0 0.8rem 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Duración Prevista</div>

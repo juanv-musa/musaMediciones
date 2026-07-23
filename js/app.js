@@ -369,23 +369,23 @@ function numeroALetras(num) {
                                             <td style="padding: 2px 4px; text-align: right;">${m.length || ''}</td>
                                             <td style="padding: 2px 4px; text-align: right;">${m.width || ''}</td>
                                             <td style="padding: 2px 4px; text-align: right;">${m.height || ''}</td>
-                                            <td style="padding: 2px 4px; text-align: right;">${m.subtotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                            <td style="padding: 2px 4px; text-align: right;">${m.subtotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                             <td colspan="2"></td>
                                         </tr>
                                     `).join('')}
                                     <tr>
                                         <td colspan="2"></td>
                                         <td colspan="4" style="padding: 8px 4px; text-align: right;">TOTAL PARTIDA ${i.order}</td>
-                                        <td style="padding: 8px 4px; text-align: right;">${i.qty.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
-                                        <td style="padding: 8px 4px; text-align: right;">${i.price.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
-                                        <td style="padding: 8px 4px; text-align: right;">${i.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.qty.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.price.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">${i.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     </tr>
                                     <tr><td colspan="9" style="height: 15px;"></td></tr>
                                 `).join('')}
                                 <tr>
                                     <td colspan="7"></td>
                                     <td style="padding: 8px 4px; text-align: right; font-weight: bold;">TOTAL CAPÍTULO ${c.order}</td>
-                                    <td style="padding: 8px 4px; text-align: right; font-weight: bold;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px 4px; text-align: right; font-weight: bold;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 </tr>
                                 <tr><td colspan="9" style="height: 30px;"></td></tr>
                             `).join('')}
@@ -408,7 +408,7 @@ function numeroALetras(num) {
                                 <tr>
                                     <td style="padding: 8px;">${c.order}</td>
                                     <td style="padding: 8px;">${c.title.toUpperCase()}</td>
-                                    <td style="padding: 8px; text-align: right;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; text-align: right;">${c.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -417,27 +417,27 @@ function numeroALetras(num) {
                     <div style="width: 400px; margin-left: auto; margin-top: 40px;">
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
                             <div>SUMA EJECUCIÓN MATERIAL</div>
-                            <div style="text-align: right;">${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
                             <div>Gastos generales ${p.expensesPct}%</div>
-                            <div style="text-align: right;">${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
                             <div>Beneficio industrial ${p.benefitPct}%</div>
-                            <div style="text-align: right;">${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 12px 0;">
                             <div>SUMA</div>
-                            <div style="text-align: right;">${p.pec.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.pec.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 4px 0;">
                             <div>I.V.A. ${p.taxPct}%</div>
-                            <div style="text-align: right;">${p.taxTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.taxTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; padding: 12px 0; font-weight: bold;">
                             <div>Total presupuesto</div>
-                            <div style="text-align: right;">${p.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+                            <div style="text-align: right;">${p.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                     </div>
 
@@ -486,7 +486,7 @@ function numeroALetras(num) {
     updateGlobalUI: function(data) {
         if (!data || !data.project) return;
         const totalVal = document.getElementById('project-total-val');
-        if (totalVal) totalVal.textContent = (data.project.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 });
+        if (totalVal) totalVal.textContent = (data.project.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     },
 
     updatePrintFields: function(data, clientList) {

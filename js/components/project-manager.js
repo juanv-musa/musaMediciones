@@ -55,7 +55,7 @@ class ProjectManagerView {
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Modificado: ${date}</div>
                 
                 <div style="margin-top: auto;">
-                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.5rem;">${project.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.5rem;">${project.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</div>
                     
                     <div style="display: flex; gap: 0.8rem;">
                         <button class="btn-load-project btn-musa" data-id="${project.id}" style="flex: 1; ${isActive ? 'background: var(--primary-hover);' : ''}">${isActive ? 'Continuar Editando' : 'Abrir'}</button>

@@ -73,12 +73,14 @@ class BudgetView {
 
                     <!-- Enhanced Totals Block -->
                     <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #000; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                        <div style="font-size: 0.9rem; color: #666;">SUMA EJECUCIÓN MATERIAL: <strong>${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
-                        <div style="font-size: 0.9rem; color: #7c3aed; font-weight: 700;">GASTO REAL TOTAL: <strong>${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
-                        <div style="font-size: 0.9rem; color: #666;">GASTOS GENERALES (${p.expensesPct}%): <strong>${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
-                        <div style="font-size: 0.9rem; color: #666;">BENEFICIO INDUSTRIAL (${p.benefitPct}%): <strong>${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #666;">SUMA EJECUCIÓN MATERIAL: <strong>${p.pem.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #7c3aed; font-weight: 700;">GASTO REAL TOTAL: <strong>${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #666;">GASTOS GENERALES (${p.expensesPct}%): <strong>${p.expensesTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #666;">BENEFICIO INDUSTRIAL (${p.benefitPct}%): <strong>${p.benefitTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #ccc;">SUMA (P.E.C.): <strong>${p.pec.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
+                        <div style="font-size: 0.9rem; color: #666;">I.V.A. (${p.taxPct}%): <strong>${p.taxTotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong></div>
                         <div style="font-size: 1.2rem; font-weight: 800; margin-top: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
-                            TOTAL PRESUPUESTO: <span style="color: var(--primary);">${p.total.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €</span>
+                            TOTAL PRESUPUESTO: <span style="color: var(--primary);">${p.total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</span>
                         </div>
                     </div>
                 </div>
