@@ -118,17 +118,17 @@ class DashboardView {
 
     calculateTotalDuration(data) {
         let maxDays = 0;
-        const projectStart = new Date(data.project.startDate);
+        const projectStart = new Date(data.project.startDate || new Date());
         data.chapters.forEach(c => {
             c.items.forEach(i => {
-                if (i.planning.endDate) {
+                if (i.planning && i.planning.endDate) {
                     const end = new Date(i.planning.endDate);
                     const diffDays = Math.ceil((end - projectStart) / (1000 * 60 * 60 * 24));
                     if (diffDays > maxDays) maxDays = diffDays;
                 }
             });
         });
-        return maxDays + 1;
+        return maxDays || 0;
     }
 
     calculateCompletion(data) {

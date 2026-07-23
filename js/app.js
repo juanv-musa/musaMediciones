@@ -140,6 +140,36 @@ window.musaApp = {
             }
         });
 
+        const btnNewQuick = document.getElementById('btn-new-project-quick');
+        if (btnNewQuick) btnNewQuick.addEventListener('click', () => {
+            const name = prompt('Nombre del nuevo presupuesto:', 'Nuevo Presupuesto');
+            if (name) {
+                window.state.createNewProject(name);
+                this.switchView('budget');
+            }
+        });
+
+        const btnExcel = document.getElementById('btn-export-excel');
+        if (btnExcel) btnExcel.addEventListener('click', () => {
+            if (!window.state.data) { alert('No hay proyecto activo.'); return; }
+            const d = window.state.data;
+            const rows = [['Capítulo', 'Partida', 'Descripción', 'Unidad', 'Cantidad', 'Precio', 'Importe']];
+            d.chapters.forEach(c => {
+                c.items.forEach(i => {
+                    rows.push([c.title, i.order, i.descShort, i.unit, i.qty.toFixed(2), i.price.toFixed(2), i.total.toFixed(2)]);
+                });
+            });
+            rows.push(['', '', '', '', '', 'TOTAL', d.project.total.toFixed(2)]);
+            const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (d.project.name || 'presupuesto') + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
         this.switchView('portfolio');
     },
 

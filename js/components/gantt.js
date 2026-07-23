@@ -44,7 +44,7 @@ class PlanningView {
                         ${flattened.map(f => `
                             <div style="height: ${this.rowHeight}px; padding: 0 1.5rem; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.03); background: white;">
                                 <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${f.item.descShort}</span>
-                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">${f.item.planning.duration} días</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">${(f.item.planning && f.item.planning.duration) ? f.item.planning.duration + ' días' : 'Sin planif.'}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -96,7 +96,7 @@ class PlanningView {
     getMaxDate(flattened, minDate) {
         let max = new Date(minDate);
         flattened.forEach(f => {
-            if (f.item.planning.endDate) {
+            if (f.item.planning && f.item.planning.endDate) {
                 const end = new Date(f.item.planning.endDate);
                 if (end > max) max = end;
             }
@@ -126,22 +126,22 @@ class PlanningView {
 
     renderBar(f, idx, minDate) {
         const item = f.item;
-        if (!item.planning.startDate) return '';
+        if (!item.planning || !item.planning.startDate) return '';
         
         const start = new Date(item.planning.startDate);
         const diffDays = Math.ceil((start - minDate) / (1000 * 60 * 60 * 24));
         const x = diffDays * this.dayWidth + 10;
         const y = idx * this.rowHeight + 15;
-        const width = item.planning.duration * this.dayWidth - 20;
+        const width = (item.planning.duration || 1) * this.dayWidth - 20;
 
         const color = this.colors[f.chapterIdx % this.colors.length];
 
         return `
             <g class="gantt-item-group" data-id="${item.id}" style="cursor: pointer;">
-                <rect x="${x}" y="${y}" width="${width}" height="30" fill="${color}" rx="15" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
+                <rect x="${x}" y="${y}" width="${Math.max(width, 10)}" height="30" fill="${color}" rx="15" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))">
                     <title>${item.descShort}: ${item.planning.startDate} a ${item.planning.endDate}</title>
                 </rect>
-                <text x="${x + width / 2}" y="${y + 20}" text-anchor="middle" fill="white" style="font-size: 10px; font-weight: 700; pointer-events: none;">${item.planning.duration}d</text>
+                <text x="${x + Math.max(width, 10) / 2}" y="${y + 20}" text-anchor="middle" fill="white" style="font-size: 10px; font-weight: 700; pointer-events: none;">${item.planning.duration || 1}d</text>
             </g>
         `;
     }
@@ -153,9 +153,10 @@ class PlanningView {
 
         flattened.forEach((f, idx) => {
             const item = f.item;
+            if (!item.planning || !item.planning.dependencies) return;
             item.planning.dependencies.forEach(depId => {
                 const depData = itemMap[depId];
-                if (depData) {
+                if (depData && depData.f.item.planning && depData.f.item.planning.endDate && item.planning.startDate) {
                     const depEnd = new Date(depData.f.item.planning.endDate);
                     const itemStart = new Date(item.planning.startDate);
                     

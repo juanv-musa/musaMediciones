@@ -27,7 +27,7 @@ class ProjectManagerView {
                             <h3 style="color: var(--text-secondary);">No hay proyectos guardados</h3>
                             <p style="color: var(--text-muted); margin-top: 0.5rem;">Crea tu primer presupuesto para empezar a trabajar.</p>
                         </div>
-                    ` : projects.map(p => this.renderProjectCard(p, data.project.id)).join('')}
+                    ` : projects.map(p => this.renderProjectCard(p, data ? data.id : null)).join('')}
                 </div>
             </div>
         `;
@@ -72,7 +72,7 @@ class ProjectManagerView {
         this.container.querySelectorAll('.btn-load-project').forEach(btn => {
             btn.addEventListener('click', () => {
                 window.state.loadProject(btn.getAttribute('data-id'));
-                if (window.app) window.app.switchView('budget');
+                if (window.musaApp) window.musaApp.switchView('budget');
             });
         });
 
@@ -90,7 +90,7 @@ class ProjectManagerView {
                 const name = prompt('Nombre del nuevo proyecto:', 'Nuevo Presupuesto');
                 if (name) {
                     window.state.createNewProject(name);
-                    if (window.app) window.app.switchView('budget');
+                    if (window.musaApp) window.musaApp.switchView('budget');
                 }
             });
         }

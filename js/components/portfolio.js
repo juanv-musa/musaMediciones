@@ -45,7 +45,7 @@ class PortfolioView {
         };
 
         let projectsHtml = projects.map(p => `
-            <div style="display: grid; grid-template-columns: 3fr 2fr 2fr 1fr; align-items: center; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border); transition: all 0.2s; border-radius: 8px;" onmouseover="this.style.background='white'" onmouseout="this.style.background='transparent'">
+            <div class="portfolio-project-row" data-id="${p.id}" style="cursor: pointer; display: grid; grid-template-columns: 3fr 2fr 2fr 1fr; align-items: center; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border); transition: all 0.2s; border-radius: 8px;" onmouseover="this.style.background='white'" onmouseout="this.style.background='transparent'">
                 <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">${p.name}</div>
                 <div style="color: var(--text-secondary); font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
                     <i data-lucide="calendar" style="width:14px;"></i> ${p.deadline || 'Sin fecha'}
@@ -184,7 +184,23 @@ class PortfolioView {
             </div>
         `;
 
+        this.addEventListeners();
         if (window.lucide) lucide.createIcons();
+    }
+
+    addEventListeners() {
+        const projectRows = this.container.querySelectorAll('.portfolio-project-row');
+        projectRows.forEach(row => {
+            row.addEventListener('click', () => {
+                const id = row.getAttribute('data-id');
+                if (id) {
+                    window.state.loadProject(id);
+                    if (window.musaApp) {
+                        window.musaApp.switchView('dashboard');
+                    }
+                }
+            });
+        });
     }
 }
 

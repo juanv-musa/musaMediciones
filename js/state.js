@@ -158,6 +158,7 @@ class State {
             chapters: [
                 { id: 'C1', order: "01", title: 'Capítulo 1', total: 0, items: [] }
             ],
+            // planning field added per item dynamically
             priceCatalog: []
         };
     }
@@ -201,7 +202,9 @@ class State {
         if (chapter) {
             const itemOrder = `${chapter.order}.${(chapter.items.length + 1).toString().padStart(2, '0')}`;
             chapter.items.push({
-                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: '', unit: 'ud', price: 0, qty: 0, total: 0, actualSpend: 0, measurements: [], ...itemData
+                id: 'P' + Date.now(), order: itemOrder, descShort: 'Nueva Partida', descLong: '', unit: 'ud', price: 0, qty: 0, total: 0, actualSpend: 0, measurements: [],
+                planning: { startDate: '', endDate: '', duration: 1, dependencies: [] },
+                ...itemData
             });
             this.calculate();
         }
