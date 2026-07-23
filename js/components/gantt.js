@@ -43,7 +43,7 @@ class PlanningView {
                         <div style="height: 50px; background: white; display: flex; align-items: center; padding: 0 1.5rem; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border);">PARTIDA / TAREA</div>
                         ${flattened.map(f => `
                             <div style="height: ${this.rowHeight}px; padding: 0 1.5rem; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.03); background: white;">
-                                <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${f.item.descShort}</span>
+                                <span style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${f.item.descShort}</span>
                                 <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">${(f.item.planning && f.item.planning.duration) ? f.item.planning.duration + ' días' : 'Sin planif.'}</span>
                             </div>
                         `).join('')}
@@ -81,7 +81,29 @@ class PlanningView {
     addEventListeners() {
         const btnPdf = this.container.querySelector('#btn-export-pdf');
         if (btnPdf) {
-            btnPdf.addEventListener('click', () => window.print());
+            btnPdf.addEventListener('click', () => {
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @media print { 
+                        .view-container { display: none !important; }
+                        #view-planning { display: block !important; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+                        .planning-view { height: auto !important; box-shadow: none !important; border: none !important; }
+                        .gantt-chart { overflow: visible !important; display: block !important; }
+                        #gantt-timeline-container { overflow: visible !important; }
+                        .gantt-task-list { border-right: none !important; overflow: visible !important; }
+                        aside, header, #btn-export-pdf { display: none !important; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                const afterPrintHandler = () => {
+                    document.head.removeChild(style);
+                    window.removeEventListener('afterprint', afterPrintHandler);
+                };
+                window.addEventListener('afterprint', afterPrintHandler);
+                
+                window.print();
+            });
         }
     }
 
