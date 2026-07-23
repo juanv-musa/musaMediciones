@@ -74,7 +74,7 @@
             }
 
             .view-container {
-                display: block !important;
+                display: none !important;
             }
 
             .glass {
@@ -248,36 +248,7 @@
             <div id="view-budget" class="view-container" style="display: none;"></div>
             <div id="view-planning" class="view-container" style="display: none;"></div>
             
-            <!-- PRINT-ONLY SECTIONS -->
-            <div id="print-detailed-report" class="print-section">
-                <div class="print-header">
-                    <div class="print-header-title">MEDICIONES Y PRESUPUESTO</div>
-                    <div class="print-header-item"><div class="print-header-label">PROYECTO:</div><div id="p-project"></div></div>
-                    <div class="print-header-item"><div class="print-header-label">SITUACION:</div><div id="p-situation"></div></div>
-                    <div class="print-header-item"><div class="print-header-label">PROPIEDAD:</div><div id="p-property"></div></div>
-                    <div class="print-header-item"><div class="print-header-label">MUSEOLOGO:</div><div id="p-author"></div></div>
-                    <div class="print-header-item"><div class="print-header-label">LOCALIDAD:</div><div id="p-location"></div></div>
-                </div>
-                <div id="print-tree-root"></div>
-            </div>
-
-            <div id="print-summary-report" class="print-section">
-                <div class="print-header">
-                    <div class="print-header-title">RESUMEN DE PRESUPUESTO</div>
-                </div>
-                <div id="print-summary-root"></div>
-                
-                <div class="certification-text" style="margin-top: 50px;">
-                    Asciende el presente documento a la expresada cantidad de<br>
-                    <span id="txt-amount-words" style="font-weight: 800;"></span> (<span id="txt-amount-numeric"></span> EUROS)
-                </div>
-                
-                <div class="signature-block">
-                    <div id="p-signature-location" style="margin-bottom: 20px;"></div>
-                    <div id="p-signature-title" style="font-weight: 700;"></div>
-                    <div id="p-signature-name"></div>
-                </div>
-            </div>
+            <!-- Old print sections removed. We now use pdf-report-container -->
         </main>
     </div>
 

@@ -246,21 +246,12 @@ function numeroALetras(num) {
     return letrasEnteros + (enteros === 1 ? ' EURO' : ' EUROS') + letrasCentavos;
 }
 
-function promptExportData() {
-    const p = window.state.data.project;
-    const situacion = prompt("Situación (opcional):", p.situacion || "");
-    const propiedad = prompt("Propiedad (opcional):", p.propiedad || "");
-    if (situacion !== null) p.situacion = situacion;
-    if (propiedad !== null) p.propiedad = propiedad;
-    return window.state.data;
-}
-
         const btnExcel = document.getElementById('btn-export-excel');
         if (btnExcel) btnExcel.addEventListener('click', () => {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
             if (typeof XLSX === 'undefined') { alert('La librería XLSX aún se está cargando. Por favor, espera un segundo.'); return; }
             
-            const d = promptExportData();
+            const d = window.state.data;
             const wb = XLSX.utils.book_new();
             const p = d.project;
 
@@ -269,8 +260,8 @@ function promptExportData() {
                 ['MEDICIONES Y PRESUPUESTO'],
                 [],
                 ['PROYECTO:', p.name],
-                ['SITUACION:', p.situacion || ''],
-                ['PROPIEDAD:', p.propiedad || '']
+                ['SITUACION:', p.situation || ''],
+                ['PROPIEDAD:', p.property || '']
             ];
             const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
             XLSX.utils.book_append_sheet(wb, wsInfo, "Portada");
@@ -318,7 +309,7 @@ function promptExportData() {
         const btnPdf = document.getElementById('btn-export-pdf');
         if (btnPdf) btnPdf.addEventListener('click', () => {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
-            const d = promptExportData();
+            const d = window.state.data;
             const p = d.project;
             const container = document.getElementById('pdf-report-container');
             
@@ -331,9 +322,9 @@ function promptExportData() {
                         <div style="font-weight: bold;">PROYECTO:</div>
                         <div>${p.name.toUpperCase()}</div>
                         <div style="font-weight: bold;">SITUACION:</div>
-                        <div>${(p.situacion || '').toUpperCase()}</div>
+                        <div>${(p.situation || '').toUpperCase()}</div>
                         <div style="font-weight: bold;">PROPIEDAD:</div>
-                        <div>${(p.propiedad || '').toUpperCase()}</div>
+                        <div>${(p.property || '').toUpperCase()}</div>
                     </div>
                 </div>
 
