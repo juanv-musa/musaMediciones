@@ -142,19 +142,6 @@
                 text-align: right;
             }
 
-            footer.print-footer {
-                display: block !important;
-                position: fixed;
-                bottom: 10mm;
-                left: 20mm;
-                right: 20mm;
-                border-top: 1px solid #ddd;
-                padding-top: 5mm;
-                font-size: 7pt;
-                color: #666;
-                text-align: center;
-            }
-            .page-number:after { content: counter(page); }
         }
 
         .print-only, .print-section { display: none; }
@@ -252,9 +239,7 @@
         </main>
     </div>
 
-    <footer class="print-footer">
-        Documento generado automáticamente por MusaMediciones | Musaraña Gestión de Museos | Página <span class="page-number"></span>
-    </footer>
+
 
     <!-- Login Overlay -->
     <div id="login-overlay" style="position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.3s ease;">
