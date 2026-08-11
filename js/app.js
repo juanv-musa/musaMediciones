@@ -251,6 +251,7 @@ function numeroALetras(num) {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
             if (typeof XLSX === 'undefined') { alert('La librería XLSX aún se está cargando. Por favor, espera un segundo.'); return; }
             
+            const includeGasto = window.confirm("¿Desea incluir la sección de Gasto Real en la exportación?");
             const d = window.state.data;
             const wb = XLSX.utils.book_new();
             const p = d.project;
@@ -303,12 +304,33 @@ function numeroALetras(num) {
             const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
             XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
 
+            if (includeGasto) {
+                const gastoData = [['Ord.', 'Capítulo', 'Presupuestado', 'Gasto Real', 'Desviación']];
+                let totalPresupuestado = 0;
+                let totalGasto = 0;
+                d.chapters.forEach(c => {
+                    const presupuestado = c.total || 0;
+                    const gasto = c.actualSpend || 0;
+                    const desviacion = presupuestado - gasto;
+                    totalPresupuestado += presupuestado;
+                    totalGasto += gasto;
+                    gastoData.push([c.order, c.title, presupuestado.toFixed(2), gasto.toFixed(2), desviacion.toFixed(2)]);
+                });
+                gastoData.push(['', '', '', '', '']);
+                const totalDesviacion = totalPresupuestado - totalGasto;
+                gastoData.push(['', 'TOTALES', totalPresupuestado.toFixed(2), totalGasto.toFixed(2), totalDesviacion.toFixed(2)]);
+                
+                const wsGasto = XLSX.utils.aoa_to_sheet(gastoData);
+                XLSX.utils.book_append_sheet(wb, wsGasto, "Gasto Real");
+            }
+
             XLSX.writeFile(wb, (p.name || 'presupuesto') + '.xlsx');
         });
 
         const btnPdf = document.getElementById('btn-export-pdf');
         if (btnPdf) btnPdf.addEventListener('click', () => {
             if (!window.state.data) { alert('No hay proyecto activo.'); return; }
+            const includeGasto = window.confirm("¿Desea incluir la sección de Gasto Real en la exportación?");
             const d = window.state.data;
             const p = d.project;
             const container = document.getElementById('pdf-report-container');
@@ -456,6 +478,47 @@ function numeroALetras(num) {
                         ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
                 </div>
+
+                ${includeGasto ? `
+                <!-- GASTO REAL -->
+                <div style="page-break-before: always; padding: 40px;">
+                    <h2 style="font-size: 16pt; margin-bottom: 30px;">ESTADO DE GASTO REAL</h2>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                        <thead>
+                            <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                                <th style="text-align: left; padding: 8px; width: 60px;">Ord.</th>
+                                <th style="text-align: left; padding: 8px;">Capítulo</th>
+                                <th style="text-align: right; padding: 8px; width: 100px;">Presupuestado</th>
+                                <th style="text-align: right; padding: 8px; width: 100px;">Gasto Real</th>
+                                <th style="text-align: right; padding: 8px; width: 100px;">Desviación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${d.chapters.map(c => {
+                                const pres = c.total || 0;
+                                const gasto = c.actualSpend || 0;
+                                const desv = pres - gasto;
+                                return \`
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">\${c.order}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">\${c.title.toUpperCase()}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">\${pres.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">\${gasto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: \${desv < 0 ? 'red' : 'inherit'};">\${desv.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                </tr>
+                                \`;
+                            }).join('')}
+                            <tr style="border-top: 2px solid #000; font-weight: bold;">
+                                <td colspan="2" style="padding: 12px 8px; text-align: right;">TOTALES</td>
+                                <td style="padding: 12px 8px; text-align: right;">\${d.chapters.reduce((sum, c) => sum + (c.total||0), 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 12px 8px; text-align: right;">\${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 12px 8px; text-align: right; color: \${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)) < 0 ? 'red' : 'inherit'};">\${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                ` : ''}
+
                 </div>
             `;
             
