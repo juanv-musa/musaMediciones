@@ -302,3 +302,56 @@ input[type="number"]:focus {
     .nav-text { display: none; }
     header { padding: 0 1.5rem; }
 }
+
+@media (max-width: 768px) {
+    #app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+    header {
+        grid-column: 1 / -1;
+        padding: 1rem;
+        height: auto;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    .project-info {
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+        gap: 0.5rem !important;
+    }
+    .user-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    aside {
+        grid-column: 1 / -1;
+        grid-row: 3 / 4;
+        padding: 0.5rem;
+        flex-direction: row;
+        border-top: 1px solid var(--border);
+        background: white;
+        z-index: 100;
+        overflow-x: auto;
+        gap: 0;
+    }
+    nav { width: 100%; }
+    nav ul {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0;
+    }
+    .nav-item {
+        flex-direction: column;
+        gap: 0.2rem;
+        padding: 0.5rem;
+    }
+    .nav-text {
+        display: block;
+        font-size: 0.6rem;
+    }
+    .quick-stats { display: none; }
+    main { padding: 1rem; }
+}

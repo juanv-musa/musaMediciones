@@ -463,7 +463,11 @@ function numeroALetras(num) {
             container.style.display = 'block';
             
             setTimeout(() => {
+                const originalTitle = document.title;
+                document.title = " "; // Prevent browser from printing title in header/footer
+
                 const afterPrintHandler = () => {
+                    document.title = originalTitle;
                     container.style.display = 'none';
                     container.innerHTML = '';
                     window.removeEventListener('afterprint', afterPrintHandler);
