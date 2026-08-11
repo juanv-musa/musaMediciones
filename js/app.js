@@ -498,21 +498,21 @@ function numeroALetras(num) {
                                 const pres = c.total || 0;
                                 const gasto = c.actualSpend || 0;
                                 const desv = pres - gasto;
-                                return \`
+                                return `
                                 <tr>
-                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">\${c.order}</td>
-                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">\${c.title.toUpperCase()}</td>
-                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">\${pres.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">\${gasto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: \${desv < 0 ? 'red' : 'inherit'};">\${desv.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${c.order}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${c.title.toUpperCase()}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">${pres.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">${gasto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: ${desv < 0 ? 'red' : 'inherit'};">${desv.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 </tr>
-                                \`;
+                                `;
                             }).join('')}
                             <tr style="border-top: 2px solid #000; font-weight: bold;">
                                 <td colspan="2" style="padding: 12px 8px; text-align: right;">TOTALES</td>
-                                <td style="padding: 12px 8px; text-align: right;">\${d.chapters.reduce((sum, c) => sum + (c.total||0), 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td style="padding: 12px 8px; text-align: right;">\${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td style="padding: 12px 8px; text-align: right; color: \${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)) < 0 ? 'red' : 'inherit'};">\${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 12px 8px; text-align: right;">${d.chapters.reduce((sum, c) => sum + (c.total||0), 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 12px 8px; text-align: right;">${(p.actualSpend || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 12px 8px; text-align: right; color: ${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)) < 0 ? 'red' : 'inherit'};">${(d.chapters.reduce((sum, c) => sum + (c.total||0), 0) - (p.actualSpend || 0)).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                             </tr>
                         </tbody>
                     </table>
