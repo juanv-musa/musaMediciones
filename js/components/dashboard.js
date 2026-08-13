@@ -97,7 +97,27 @@ class DashboardView {
     addEventListeners() {
         const btnPrint = this.container.querySelector('#btn-print-dashboard');
         if (btnPrint) {
-            btnPrint.addEventListener('click', () => window.print());
+            btnPrint.addEventListener('click', () => {
+                this.container.classList.add('print-active');
+                const innerView = this.container.querySelector('.dashboard-view');
+                if (innerView) innerView.classList.add('print-active');
+                
+                // Add a small delay for DOM update
+                setTimeout(() => {
+                    const originalTitle = document.title;
+                    document.title = "Informe Ejecutivo - " + (window.state?.data?.project?.name || "Proyecto");
+                    
+                    const afterPrintHandler = () => {
+                        document.title = originalTitle;
+                        this.container.classList.remove('print-active');
+                        if (innerView) innerView.classList.remove('print-active');
+                        window.removeEventListener('afterprint', afterPrintHandler);
+                    };
+                    
+                    window.addEventListener('afterprint', afterPrintHandler);
+                    window.print();
+                }, 100);
+            });
         }
 
         const inpProgress = this.container.querySelector('#inp-progress');
