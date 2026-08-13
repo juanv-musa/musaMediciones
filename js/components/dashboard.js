@@ -142,14 +142,14 @@ class DashboardView {
                                 <tbody>
                                     ${data.chapters.map(c => {
                                         const percentage = p.total > 0 ? (c.total / p.total) * 100 : 0;
-                                        return \`
+                                        return `
                                         <tr>
-                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; color: #475569;">\${c.order}</td>
-                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">\${c.title}</td>
-                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 600;">\${(c.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</td>
-                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #64748b;">\${percentage.toFixed(1)}%</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; color: #475569;">${c.order}</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">${c.title}</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 600;">${(c.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #64748b;">${percentage.toFixed(1)}%</td>
                                         </tr>
-                                        \`;
+                                        `;
                                     }).join('')}
                                 </tbody>
                             </table>
@@ -158,11 +158,11 @@ class DashboardView {
                         <div>
                             <h3 style="font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 15px; color: #334155; font-weight: 700;">Estado del Proyecto</h3>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 10pt; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Progreso de Obra:</span> <span style="font-weight: 700;">\${p.progress || 0}%</span></div>
-                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Hito Actual:</span> <span style="font-weight: 500;">\${p.milestone || 'Fase Inicial'}</span></div>
-                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Fecha Límite:</span> <span style="font-weight: 500;">\${p.deadline || 'No definida'}</span></div>
-                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Nivel de Riesgo:</span> <span style="font-weight: 500;">\${p.risk || 'Bajo'}</span></div>
-                                <div style="grid-column: 1 / -1;"><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Estado General:</span> <span style="font-weight: 700; color: \${p.status === 'Retraso' ? '#ef4444' : '#10b981'};">\${p.status || 'En plazo'}</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Progreso de Obra:</span> <span style="font-weight: 700;">${p.progress || 0}%</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Hito Actual:</span> <span style="font-weight: 500;">${p.milestone || 'Fase Inicial'}</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Fecha Límite:</span> <span style="font-weight: 500;">${p.deadline || 'No definida'}</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Nivel de Riesgo:</span> <span style="font-weight: 500;">${p.risk || 'Bajo'}</span></div>
+                                <div style="grid-column: 1 / -1;"><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Estado General:</span> <span style="font-weight: 700; color: ${p.status === 'Retraso' ? '#ef4444' : '#10b981'};">${p.status || 'En plazo'}</span></div>
                             </div>
                         </div>
                         
