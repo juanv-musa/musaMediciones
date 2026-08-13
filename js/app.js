@@ -563,6 +563,9 @@ function numeroALetras(num) {
         const totalVal = document.getElementById('project-total-val');
         if (totalVal) totalVal.textContent = (data.project.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         
+        const projectName = document.getElementById('current-project-name');
+        if (projectName) projectName.textContent = data.project.name || 'Sin Proyecto';
+        
         const progressBar = document.getElementById('project-progress-bar');
         const progressText = document.getElementById('progress-text');
         const projectTotalReduced = document.getElementById('project-total-reduced');

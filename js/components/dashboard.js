@@ -94,29 +94,100 @@ class DashboardView {
         if (window.lucide) lucide.createIcons();
     }
 
-    addEventListeners() {
         const btnPrint = this.container.querySelector('#btn-print-dashboard');
         if (btnPrint) {
             btnPrint.addEventListener('click', () => {
-                this.container.classList.add('print-active');
-                const innerView = this.container.querySelector('.dashboard-view');
-                if (innerView) innerView.classList.add('print-active');
+                const data = window.state?.data;
+                if (!data || !data.project) return;
                 
-                // Add a small delay for DOM update
+                const p = data.project;
+                const totalDuration = this.calculateTotalDuration(data);
+                const completion = this.calculateCompletion(data);
+                const container = document.getElementById('pdf-report-container');
+                
+                let html = `
+                    <div style="font-family: 'Inter', Arial, sans-serif; color: #000; background: #fff; padding: 10px 20px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="font-size: 20pt; margin-bottom: 5px; color: #111; letter-spacing: 1px;">INFORME EJECUTIVO</h1>
+                            <h2 style="font-size: 14pt; font-weight: normal; color: #555; text-transform: uppercase; margin: 0;">${p.name || 'Sin Título'}</h2>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; text-align: center;">
+                            <div style="padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
+                                <div style="font-size: 9pt; color: #64748b; text-transform: uppercase; margin-bottom: 5px; font-weight: 700;">Presupuesto Total</div>
+                                <div style="font-size: 16pt; font-weight: 800; color: #0f172a;">${(p.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</div>
+                            </div>
+                            <div style="padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
+                                <div style="font-size: 9pt; color: #64748b; text-transform: uppercase; margin-bottom: 5px; font-weight: 700;">Duración Prevista</div>
+                                <div style="font-size: 16pt; font-weight: 800; color: #0f172a;">${totalDuration} Días</div>
+                            </div>
+                            <div style="padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
+                                <div style="font-size: 9pt; color: #64748b; text-transform: uppercase; margin-bottom: 5px; font-weight: 700;">Tareas Completadas</div>
+                                <div style="font-size: 16pt; font-weight: 800; color: #0f172a;">${completion}%</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 15px; color: #334155; font-weight: 700;">Distribución por Capítulos</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 6px 5px; width: 50px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Ord.</th>
+                                        <th style="text-align: left; padding: 6px 5px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Capítulo</th>
+                                        <th style="text-align: right; padding: 6px 5px; width: 120px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Importe</th>
+                                        <th style="text-align: right; padding: 6px 5px; width: 80px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.chapters.map(c => {
+                                        const percentage = p.total > 0 ? (c.total / p.total) * 100 : 0;
+                                        return \`
+                                        <tr>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; color: #475569;">\${c.order}</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; font-weight: 500;">\${c.title}</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 600;">\${(c.total || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€</td>
+                                            <td style="padding: 8px 5px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #64748b;">\${percentage.toFixed(1)}%</td>
+                                        </tr>
+                                        \`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h3 style="font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px; margin-bottom: 15px; color: #334155; font-weight: 700;">Estado del Proyecto</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 10pt; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Progreso de Obra:</span> <span style="font-weight: 700;">\${p.progress || 0}%</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Hito Actual:</span> <span style="font-weight: 500;">\${p.milestone || 'Fase Inicial'}</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Fecha Límite:</span> <span style="font-weight: 500;">\${p.deadline || 'No definida'}</span></div>
+                                <div><span style="color: #64748b; font-weight: 600; display: inline-block; width: 120px;">Nivel de Riesgo:</span> <span style="font-weight: 500;">\${p.risk || 'Bajo'}</span></div>
+                                <div style="grid-column: 1 / -1;"><span style="color: #64748b; font-weight: 600; display: inline-block; width: 150px;">Estado General:</span> <span style="font-weight: 700; color: \${p.status === 'Retraso' ? '#ef4444' : '#10b981'};">\${p.status || 'En plazo'}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px; text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                            Generado automáticamente por MusaMediciones el ${new Date().toLocaleDateString('es-ES')}
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+                container.style.display = 'block';
+                
                 setTimeout(() => {
                     const originalTitle = document.title;
-                    document.title = "Informe Ejecutivo - " + (window.state?.data?.project?.name || "Proyecto");
-                    
+                    document.title = "Informe Ejecutivo - " + (p.name || "Proyecto");
+
                     const afterPrintHandler = () => {
                         document.title = originalTitle;
-                        this.container.classList.remove('print-active');
-                        if (innerView) innerView.classList.remove('print-active');
+                        container.style.display = 'none';
+                        container.innerHTML = '';
                         window.removeEventListener('afterprint', afterPrintHandler);
                     };
-                    
                     window.addEventListener('afterprint', afterPrintHandler);
+                    
                     window.print();
-                }, 100);
+                }, 300);
             });
         }
 
