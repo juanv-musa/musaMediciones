@@ -77,6 +77,14 @@
                 display: none !important;
             }
 
+            .view-container.print-active {
+                display: block !important;
+            }
+            
+            .dashboard-view.print-active {
+                display: block !important;
+            }
+
             .glass {
                 background: white !important;
                 box-shadow: none !important;
@@ -166,7 +174,7 @@
             </div>
             <div class="user-actions" style="display: flex; gap: 1rem;">
                 <button id="btn-export-pdf" class="btn-musa" style="background: white; color: #ef4444; border: 1px solid #fee2e2;">
-                    PDF Multihola
+                    Exportar a PDF
                 </button>
                 <button id="btn-export-excel" class="btn-musa" style="background: white; color: #059669; border: 1px solid #dcfce7;">
                     Excel (.xlsx)
@@ -211,6 +219,11 @@
                         <i data-lucide="calendar-range"></i>
                         <span class="nav-text">Planificación</span>
                     </a></li>
+                    <li><hr style="border: none; border-top: 1px solid var(--border); margin: 0.5rem 0;"></li>
+                    <li><a href="#manual" class="nav-item" data-view="manual">
+                        <i data-lucide="book-open"></i>
+                        <span class="nav-text">Manual de Uso</span>
+                    </a></li>
                 </ul>
             </nav>
 
@@ -234,6 +247,7 @@
             <div id="view-clients" class="view-container" style="display: none;"></div>
             <div id="view-budget" class="view-container" style="display: none;"></div>
             <div id="view-planning" class="view-container" style="display: none;"></div>
+            <div id="view-manual" class="view-container" style="display: none;"></div>
             
             <!-- Old print sections removed. We now use pdf-report-container -->
         </main>
@@ -399,6 +413,7 @@
     <script src="js/components/project-manager.js?v=6" defer></script>
     <script src="js/components/client-manager.js?v=6" defer></script>
     <script src="js/components/gantt.js?v=6" defer></script>
+    <script src="js/components/manual.js?v=1" defer></script>
     <script src="js/app.js?v=6" defer></script>
 </body>
 </html>

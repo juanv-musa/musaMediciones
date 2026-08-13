@@ -22,7 +22,8 @@ window.musaApp = {
             projects: document.getElementById('view-projects'),
             clients: document.getElementById('view-clients'),
             budget: document.getElementById('view-budget'),
-            planning: document.getElementById('view-planning')
+            planning: document.getElementById('view-planning'),
+            manual: document.getElementById('view-manual')
         };
         
         try {
@@ -32,7 +33,8 @@ window.musaApp = {
                 projects: new window.ProjectManagerView(this.views.projects),
                 clients: new window.ClientManagerView(this.views.clients),
                 budget: new window.BudgetView(this.views.budget),
-                planning: new window.PlanningView(this.views.planning)
+                planning: new window.PlanningView(this.views.planning),
+                manual: new window.ManualView(this.views.manual)
             };
         } catch (e) {
             console.error("MusaApp: Error instanciando componentes:", e);
