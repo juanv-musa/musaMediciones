@@ -94,6 +94,7 @@ class DashboardView {
         if (window.lucide) lucide.createIcons();
     }
 
+    addEventListeners() {
         const btnPrint = this.container.querySelector('#btn-print-dashboard');
         if (btnPrint) {
             btnPrint.addEventListener('click', () => {
