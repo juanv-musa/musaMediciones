@@ -188,7 +188,10 @@ class BudgetView {
                         <div class="val-edit"><input type="number" class="m-edit" data-id="${item.id}" data-mid="${m.id}" data-field="width" value="${m.width}"></div>
                         <div class="val-edit"><input type="number" class="m-edit" data-id="${item.id}" data-mid="${m.id}" data-field="height" value="${m.height}"></div>
                         <div style="text-align: right;">${m.subtotal.toFixed(2)}</div>
-                        <div></div><div></div><div></div>
+                        <div></div><div></div>
+                        <div style="text-align: right;">
+                            <button class="btn-delete-m ignore-print" data-id="${item.id}" data-mid="${m.id}" style="color: #ef4444; background: none; border: none; cursor: pointer; padding: 0;" title="Eliminar medición"><i data-lucide="trash-2" style="width: 14px;"></i></button>
+                        </div>
                     </div>
                 `).join('')}
 
@@ -304,6 +307,14 @@ class BudgetView {
                     item.measurements.push({ id: 'M' + Date.now(), units: 1, length: 1, width: 1, height: 1, subtotal: 1 });
                     window.state.calculate();
                 }
+            });
+        });
+
+        this.container.querySelectorAll('.btn-delete-m').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const itemId = btn.getAttribute('data-id');
+                const mid = btn.getAttribute('data-mid');
+                window.state.deleteMeasurement(itemId, mid);
             });
         });
 

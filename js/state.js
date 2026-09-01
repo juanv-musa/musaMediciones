@@ -68,7 +68,8 @@ class State {
                     milestone: doc.data().project?.milestone || 'Fase Inicial',
                     progress: doc.data().project?.progress || 0,
                     risk: doc.data().project?.risk || 'Bajo',
-                    actualSpend: doc.data().project?.actualSpend || 0
+                    actualSpend: doc.data().project?.actualSpend || 0,
+                    clientId: doc.data().project?.clientId
                 }));
                 this.notify();
                 
@@ -226,6 +227,16 @@ class State {
                 if (measure) {
                     measure[field] = ['units', 'length', 'width', 'height'].includes(field) ? (parseFloat(value) || 0) : value;
                 }
+            }
+        });
+        this.calculate();
+    }
+
+    deleteMeasurement(itemId, measurementId) {
+        this.data.chapters.forEach(c => {
+            const item = c.items.find(i => i.id === itemId);
+            if (item) {
+                item.measurements = item.measurements.filter(m => m.id !== measurementId);
             }
         });
         this.calculate();

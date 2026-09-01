@@ -45,9 +45,22 @@ class ClientManagerView {
                                         <td>${client.cif || '---'}</td>
                                         <td>${client.city || '---'}</td>
                                         <td>
-                                            <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
-                                                ${projects.filter(p => p.clientId === client.id).length}
-                                            </span>
+                                            ${(() => {
+                                                const clientProjects = projects.filter(p => p.clientId === client.id);
+                                                if (clientProjects.length === 0) {
+                                                    return `<span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">0</span>`;
+                                                }
+                                                return `
+                                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                        <span style="background: var(--primary-hover); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 800; display: inline-block; width: fit-content;">
+                                                            ${clientProjects.length} Proyecto${clientProjects.length > 1 ? 's' : ''}
+                                                        </span>
+                                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                                                            ${clientProjects.map(p => '• ' + p.name).join('<br>')}
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            })()}
                                         </td>
                                         <td style="text-align: right;">
                                             <button class="btn-edit-client" data-id="${client.id}" style="background: transparent; border: none; cursor: pointer; color: var(--primary);"><i data-lucide="edit-2" style="width: 18px;"></i></button>
